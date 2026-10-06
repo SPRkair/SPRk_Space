@@ -34,7 +34,7 @@ func (sd StorageDrivers) GetStorageDriver() (StorageDriver, error) {
 	case "Cache":
 		return sd.cache, nil
 	default:
-		return sd.cache, fmt.Errorf("error: storage: GetStorageDriver: unknown storage driver %w", sd.currentDriver)
+		return sd.cache, fmt.Errorf("error: storage: GetStorageDriver: unknown storage driver %s", sd.currentDriver)
 	}
 }
 
