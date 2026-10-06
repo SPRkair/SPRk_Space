@@ -7,10 +7,10 @@ import (
 
 type DB struct {
 	config *config.DB
-	log    *logger.Logger
+	log    logger.Logger
 }
 
-func newDB(cfg *config.DB, log *logger.Logger) DB {
+func newDB(cfg *config.DB, log logger.Logger) DB {
 	db := DB{config: cfg,
 		log: log,
 	}

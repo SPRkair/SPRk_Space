@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	App     App     `json:"app" yaml:"app" ini:"app"`
-	HTTP    HTTP    `json:"http" yaml:"http" ini:"http"`
-	Storage Storage `json:"storage" yaml:"storage" ini:"storage"`
-	Service Service `json:"service" yaml:"service" ini:"service"`
+	App      App      `json:"app" yaml:"app" ini:"app"`
+	HTTP     HTTP     `json:"http" yaml:"http" ini:"http"`
+	Storage  Storage  `json:"storage" yaml:"storage" ini:"storage"`
+	Services Services `json:"service" yaml:"service" ini:"service"`
 }
 
 type Storage struct {
@@ -33,7 +33,7 @@ type App struct {
 	Field2 string `json:"field2" yaml:"field2" ini:"field2"`
 }
 
-type Service struct {
+type Services struct {
 	Executor Executor `json:"executor" yaml:"executor" ini:"executor"`
 }
 
@@ -76,7 +76,7 @@ func getDefaultConfig() Config {
 				Field2: "",
 			},
 		},
-		Service: Service{
+		Services: Services{
 			Executor: Executor{
 				CacheSyncWaitDuration: 60,
 				TaskWaitDuration:      100,

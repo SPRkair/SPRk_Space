@@ -10,7 +10,7 @@ type Storage struct {
 	DB    *DB
 }
 
-func NewStorage(cfg *config.Storage, log *logger.Logger) *Storage {
+func NewStorage(cfg *config.Storage, log logger.Logger) *Storage {
 	cache := newCache(&cfg.Cache, log)
 	db := newDB(&cfg.DB, log)
 	storage := Storage{
