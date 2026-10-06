@@ -6,16 +6,23 @@ import (
 )
 
 type Storage struct {
-	Cache *Cache
-	DB    *DB
+	cache *Cache
+	db    *DB
+
+	FakeStorage FakeStorage
 }
 
 func NewStorage(cfg *config.Storage, log logger.Logger) *Storage {
 	cache := newCache(&cfg.Cache, log)
 	db := newDB(&cfg.DB, log)
 	storage := Storage{
-		Cache: cache,
-		DB:    &db,
+		cache: cache,
+		db:    &db,
 	}
 	return &storage
+}
+
+func (s Storage) Get() interface{} {
+
+	return nil
 }

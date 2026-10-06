@@ -14,8 +14,9 @@ type Config struct {
 }
 
 type Storage struct {
-	Cache Cache `json:"cache" yaml:"cache" ini:"cache"`
-	DB    DB    `json:"db" yaml:"db" ini:"db"`
+	Cache       Cache       `json:"cache" yaml:"cache" ini:"cache"`
+	DB          DB          `json:"db" yaml:"db" ini:"db"`
+	FakeStorage FakeStorage `json:"fakestorage" yaml:"fakestorage" ini:"fakestorage"`
 }
 
 type HTTP struct {
@@ -26,6 +27,10 @@ type HTTP struct {
 type DB struct {
 	Field1 string `json:"field1" yaml:"field1" ini:"field1"`
 	Field2 string `json:"field2" yaml:"field2" ini:"field2"`
+}
+
+type FakeStorage struct {
+	DirectoryFakeStorage string `json:"DirectoryFakeStorage" yaml:"DirectoryFakeStorage" ini:"DirectoryFakeStorage"`
 }
 
 type App struct {
@@ -74,6 +79,9 @@ func getDefaultConfig() Config {
 			DB: DB{
 				Field1: "",
 				Field2: "",
+			},
+			FakeStorage: FakeStorage{
+				DirectoryFakeStorage: "../TestStorage/",
 			},
 		},
 		Services: Services{
