@@ -1,5 +1,5 @@
 package storage
 
-type Fake_storage struct {
+type FakeStorage struct {
 	directory string
 }
