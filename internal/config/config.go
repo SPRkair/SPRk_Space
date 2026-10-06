@@ -14,9 +14,10 @@ type Config struct {
 }
 
 type Storage struct {
-	Cache       Cache       `json:"cache" yaml:"cache" ini:"cache"`
-	DB          DB          `json:"db" yaml:"db" ini:"db"`
-	FakeStorage FakeStorage `json:"fakestorage" yaml:"fakestorage" ini:"fakestorage"`
+	StorageDriver string      `json:"storagedriver" yaml:"storagedriver" ini:"storagedriver"`
+	Cache         Cache       `json:"cache" yaml:"cache" ini:"cache"`
+	DB            DB          `json:"db" yaml:"db" ini:"db"`
+	FakeStorage   FakeStorage `json:"fakestorage" yaml:"fakestorage" ini:"fakestorage"`
 }
 
 type HTTP struct {
@@ -73,6 +74,7 @@ func getDefaultConfig() Config {
 			Field2: "",
 		},
 		Storage: Storage{
+			StorageDriver: "FakeStorage",
 			Cache: Cache{
 				AutoDownloadFile: true,
 			},

@@ -32,3 +32,11 @@ func (c *Cache) SyncTest() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 }
+
+func (c *Cache) GetUser(int64) (entities.User, error) {
+	return entities.User{}, nil
+}
+
+func (c *Cache) SaveUser(entities.User) error {
+	return nil
+}
