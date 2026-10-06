@@ -4,6 +4,7 @@ import (
 	"SPRk_Space/internal/config"
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
+	"fmt"
 )
 
 type StorageDriver interface {
@@ -24,46 +25,51 @@ type StorageDrivers struct {
 	currentDriver string
 }
 
-func (sd StorageDrivers) GetStorageDriver() StorageDriver {
+func (sd StorageDrivers) GetStorageDriver() (StorageDriver, error) {
 	switch sd.currentDriver {
 	case "DB":
-		return sd.db
+		return sd.db, nil
 	case "FakeStorage":
-		return sd.fakeStorage
+		return sd.fakeStorage, nil
 	case "Cache":
-		return sd.cache
+		return sd.cache, nil
+	default:
+		return sd.cache, fmt.Errorf("error: storage: GetStorageDriver: unknown storage driver %w", sd.currentDriver)
 	}
-	return nil
 }
 
 type UserRepository struct {
 	storageDriver StorageDriver
 }
 
-func NewStorage(cfg *config.Storage, log logger.Logger) *Storage {
-	Storage := Storage{
+func NewStorage(cfg *config.Storage, log logger.Logger) (*Storage, error) {
+	storage := Storage{
 		storageDrivers: NewStorageDrivers(cfg, log),
 	}
-	Storage.User = UserRepository{storageDriver: Storage.storageDrivers.GetStorageDriver()}
-	return &Storage
+	storageDriver, err := storage.storageDrivers.GetStorageDriver()
+	if err != nil {
+		return nil, err
+	}
+	storage.User = UserRepository{storageDriver: storageDriver}
+	return &storage, nil
 }
 
 func NewStorageDrivers(cfg *config.Storage, log logger.Logger) *StorageDrivers {
 	cache := newCache(&cfg.Cache, log)
 	db := newDB(&cfg.DB, log)
 	fakestorage := newFakeStorage(&cfg.FakeStorage, log)
-	StorageDrivers := StorageDrivers{
+	storageDrivers := StorageDrivers{
 		cache:         cache,
 		db:            db,
 		fakeStorage:   fakestorage,
 		currentDriver: cfg.StorageDriver,
 	}
-	return &StorageDrivers
+	return &storageDrivers
 }
 
 func (u *UserRepository) Get(id int64) (entities.User, error) {
-	User, err := u.storageDriver.GetUser(id)
-	return User, err
+	user, err := u.storageDriver.GetUser(id)
+	return user, err
 }
 
 func (u *UserRepository) Save(user entities.User) error {

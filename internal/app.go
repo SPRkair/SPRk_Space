@@ -28,7 +28,10 @@ func (a App) Init() (app *App, err error) {
 		a.logger.Println("Error", "app: Init: Config: NewConfig: ", err)
 		a.logger.Println("Info", "Default config accepted ")
 	}
-	a.storage = storage.NewStorage(&a.config.Storage, a.logger)
+	a.storage, err = storage.NewStorage(&a.config.Storage, a.logger)
+	if err != nil {
+		a.logger.Fatal(err.Error())
+	}
 	a.services = services.NewServices(&a.config.Services, a.logger, a.storage)
 	return &a, nil
 }
