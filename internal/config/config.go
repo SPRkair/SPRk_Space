@@ -9,8 +9,13 @@ import (
 type Config struct {
 	App     App     `json:"app" yaml:"app" ini:"app"`
 	HTTP    HTTP    `json:"http" yaml:"http" ini:"http"`
-	DB      DB      `json:"db" yaml:"db" ini:"db"`
+	Storage Storage `json:"storage" yaml:"storage" ini:"storage"`
 	Service Service `json:"service" yaml:"service" ini:"service"`
+}
+
+type Storage struct {
+	Cache Cache `json:"cache" yaml:"cache" ini:"cache"`
+	DB    DB    `json:"db" yaml:"db" ini:"db"`
 }
 
 type HTTP struct {
@@ -29,7 +34,6 @@ type App struct {
 }
 
 type Service struct {
-	Cache    Cache    `json:"cache" yaml:"cache" ini:"cache"`
 	Executor Executor `json:"executor" yaml:"executor" ini:"executor"`
 }
 
@@ -43,14 +47,14 @@ type Executor struct {
 	LogSaverWaitDuration  int64 `json:"log_saver_wait_duration" yaml:"log_saver_wait_duration" ini:"log_saver_wait_duration"`
 }
 
-func NewConfig() (conf Config, err error) {
+func NewConfig() (conf *Config, err error) {
 	defaultConfig := getDefaultConfig()
 	c := defaultConfig
 	err = c.loadConfigFromFile(os.Getenv("CONFIG_FILE_PATH"))
 	if err != nil {
-		return defaultConfig, fmt.Errorf("error: config: NewConfig: loadConfigFromFile: %w", err)
+		return &defaultConfig, fmt.Errorf("error: config: NewConfig: loadConfigFromFile: %w", err)
 	}
-	return c, nil
+	return &c, nil
 }
 
 func getDefaultConfig() Config {
@@ -63,14 +67,16 @@ func getDefaultConfig() Config {
 			Field1: "",
 			Field2: "",
 		},
-		DB: DB{
-			Field1: "",
-			Field2: "",
-		},
-		Service: Service{
+		Storage: Storage{
 			Cache: Cache{
 				AutoDownloadFile: true,
 			},
+			DB: DB{
+				Field1: "",
+				Field2: "",
+			},
+		},
+		Service: Service{
 			Executor: Executor{
 				CacheSyncWaitDuration: 60,
 				TaskWaitDuration:      100,
