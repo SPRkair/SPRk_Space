@@ -14,7 +14,7 @@ func NewStorage(cfg *config.Storage, log logger.Logger) *Storage {
 	cache := newCache(&cfg.Cache, log)
 	db := newDB(&cfg.DB, log)
 	storage := Storage{
-		Cache: &cache,
+		Cache: cache,
 		DB:    &db,
 	}
 	return &storage

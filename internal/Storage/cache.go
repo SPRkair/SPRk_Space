@@ -4,9 +4,11 @@ import (
 	"SPRk_Space/internal/config"
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
+	"sync"
 )
 
 type Cache struct {
+	mu     sync.Mutex
 	config *config.Cache
 	logger logger.Logger
 
@@ -17,11 +19,16 @@ type UserCache struct {
 	Users map[int64]*entities.User
 }
 
-func newCache(cfg *config.Cache, log logger.Logger) Cache {
+func newCache(cfg *config.Cache, log logger.Logger) *Cache {
 	cache := Cache{
 		config:    cfg,
 		logger:    log,
 		UserCache: &UserCache{},
 	}
-	return cache
+	return &cache
+}
+
+func (c *Cache) SyncTest() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 }
