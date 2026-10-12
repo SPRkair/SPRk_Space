@@ -4,18 +4,20 @@ import (
 	"SPRk_Space/internal/config"
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
+	"context"
 )
 
 type DB struct {
+	ctx    context.Context
 	config *config.DB
 	log    logger.Logger
 }
 
-func newDB(cfg *config.DB, log logger.Logger) *DB {
+func newDB(ctx context.Context, cfg *config.DB, log logger.Logger) (*DB, error) {
 	db := DB{config: cfg,
 		log: log,
 	}
-	return &db
+	return &db, nil
 }
 
 func (db DB) GetUser(int64) (entities.User, error) {
@@ -31,5 +33,9 @@ func (db DB) GetTask(int64) (entities.Task, error) {
 }
 
 func (dn DB) SaveTask(entities.Task) error {
+	return nil
+}
+
+func (db DB) Close() error {
 	return nil
 }

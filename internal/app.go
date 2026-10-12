@@ -6,10 +6,12 @@ import (
 	"SPRk_Space/internal/services"
 	"SPRk_Space/internal/storage"
 	"SPRk_Space/internal/utils"
+	"context"
 	"fmt"
 )
 
 type App struct {
+	ctx      context.Context
 	logger   logger.Logger
 	config   *config.Config
 	storage  *storage.Storage
@@ -28,7 +30,7 @@ func (a App) Init() (app *App, err error) {
 		a.logger.Println("Error", "app: Init: Config: NewConfig: ", err)
 		a.logger.Println("Info", "Default config accepted ")
 	}
-	a.storage, err = storage.NewStorage(&a.config.Storage, a.logger)
+	a.storage, err = storage.NewStorage(a.ctx, &a.config.Storage, a.logger)
 	if err != nil {
 		a.logger.Fatal(err.Error())
 	}

@@ -19,13 +19,13 @@ type UserCache struct {
 	Users map[int64]*entities.User
 }
 
-func newCache(cfg *config.Cache, log logger.Logger) *Cache {
+func newCache(cfg *config.Cache, log logger.Logger) (*Cache, error) {
 	cache := Cache{
 		config:    cfg,
 		logger:    log,
 		UserCache: &UserCache{},
 	}
-	return &cache
+	return &cache, nil
 }
 
 func (c *Cache) SyncTest() {
@@ -46,5 +46,9 @@ func (c *Cache) GetTask(int64) (entities.Task, error) {
 }
 
 func (c *Cache) SaveTask(entities.Task) error {
+	return nil
+}
+
+func (c *Cache) Close() error {
 	return nil
 }

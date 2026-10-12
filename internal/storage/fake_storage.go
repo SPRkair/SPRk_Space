@@ -13,13 +13,13 @@ type FakeStorage struct {
 	directory string
 }
 
-func newFakeStorage(cfg *config.FakeStorage, log logger.Logger) *FakeStorage {
+func newFakeStorage(cfg *config.FakeStorage, log logger.Logger) (*FakeStorage, error) {
 	fakeStorage := FakeStorage{
 		config:    cfg,
 		logger:    log,
 		directory: cfg.DirectoryFakeStorage,
 	}
-	return &fakeStorage
+	return &fakeStorage, nil
 }
 
 func (fs *FakeStorage) GetUser(int64) (entities.User, error) {
@@ -35,5 +35,8 @@ func (fs *FakeStorage) GetTask(int64) (entities.Task, error) {
 }
 
 func (fs *FakeStorage) SaveTask(entities.Task) error {
+	return nil
+}
+func (fs *FakeStorage) Close() error {
 	return nil
 }

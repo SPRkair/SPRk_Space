@@ -6,6 +6,14 @@ import (
 	"os"
 )
 
+type StorageDriverType string
+
+const (
+	DriverDB          StorageDriverType = "DB"
+	DriverCache       StorageDriverType = "Cache"
+	DriverFakeStorage StorageDriverType = "FakeStorage"
+)
+
 type Config struct {
 	App      App      `json:"app" yaml:"app" ini:"app"`
 	HTTP     HTTP     `json:"http" yaml:"http" ini:"http"`
@@ -14,10 +22,10 @@ type Config struct {
 }
 
 type Storage struct {
-	StorageDriver string      `json:"storagedriver" yaml:"storagedriver" ini:"storagedriver"`
-	Cache         Cache       `json:"cache" yaml:"cache" ini:"cache"`
-	DB            DB          `json:"db" yaml:"db" ini:"db"`
-	FakeStorage   FakeStorage `json:"fakestorage" yaml:"fakestorage" ini:"fakestorage"`
+	StorageDriver StorageDriverType `json:"storagedriver" yaml:"storagedriver" ini:"storagedriver"`
+	Cache         Cache             `json:"cache" yaml:"cache" ini:"cache"`
+	DB            DB                `json:"db" yaml:"db" ini:"db"`
+	FakeStorage   FakeStorage       `json:"fakestorage" yaml:"fakestorage" ini:"fakestorage"`
 }
 
 type HTTP struct {
@@ -59,6 +67,10 @@ func NewConfig() (conf *Config, err error) {
 	err = c.loadConfigFromFile(os.Getenv("CONFIG_FILE_PATH"))
 	if err != nil {
 		return &defaultConfig, fmt.Errorf("error: config: NewConfig: loadConfigFromFile: %w", err)
+	}
+	err = c.validate()
+	if err != nil {
+		return &defaultConfig, err
 	}
 	return &c, nil
 }
@@ -102,4 +114,20 @@ func (c *Config) loadConfigFromFile(filename string) (err error) {
 		return err
 	}
 	return nil
+}
+
+func (cfg *Config) validate() error {
+	if !cfg.Storage.StorageDriver.IsValid() {
+		return fmt.Errorf("validate: unsupported storage driver %q", cfg.Storage.StorageDriver)
+	}
+	return nil
+}
+
+func (d StorageDriverType) IsValid() bool {
+	switch d {
+	case DriverDB, DriverCache, DriverFakeStorage:
+		return true
+	default:
+		return false
+	}
 }
