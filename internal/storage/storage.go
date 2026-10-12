@@ -8,12 +8,23 @@ import (
 )
 
 type StorageDriver interface {
+	UserStorageDriver
+	TaskStorageDriver
+}
+
+type UserStorageDriver interface {
 	GetUser(int64) (entities.User, error)
 	SaveUser(entities.User) error
 }
 
+type TaskStorageDriver interface {
+	GetTask(int64) (entities.Task, error)
+	SaveTask(entities.Task) error
+}
+
 type Storage struct {
 	User UserRepository
+	Task TaskRepository
 
 	storageDrivers *StorageDrivers
 }
@@ -39,7 +50,11 @@ func (sd StorageDrivers) GetStorageDriver() (StorageDriver, error) {
 }
 
 type UserRepository struct {
-	storageDriver StorageDriver
+	storageDriver UserStorageDriver
+}
+
+type TaskRepository struct {
+	storageDriver TaskStorageDriver
 }
 
 func NewStorage(cfg *config.Storage, log logger.Logger) (*Storage, error) {
@@ -51,6 +66,7 @@ func NewStorage(cfg *config.Storage, log logger.Logger) (*Storage, error) {
 		return nil, err
 	}
 	storage.User = UserRepository{storageDriver: storageDriver}
+	storage.Task = TaskRepository{storageDriver: storageDriver}
 	return &storage, nil
 }
 
@@ -67,12 +83,20 @@ func NewStorageDrivers(cfg *config.Storage, log logger.Logger) *StorageDrivers {
 	return &storageDrivers
 }
 
-func (u *UserRepository) Get(id int64) (entities.User, error) {
-	user, err := u.storageDriver.GetUser(id)
+func (ur *UserRepository) Get(id int64) (entities.User, error) {
+	user, err := ur.storageDriver.GetUser(id)
 	return user, err
 }
 
-func (u *UserRepository) Save(user entities.User) error {
+func (ur *UserRepository) Save(user entities.User) error {
+	return ur.storageDriver.SaveUser(user)
+}
 
-	return u.storageDriver.SaveUser(user)
+func (tr *TaskRepository) Get(id int64) (entities.Task, error) {
+	task, err := tr.storageDriver.GetTask(id)
+	return task, err
+}
+
+func (tr *TaskRepository) Save(task entities.Task) error {
+	return tr.storageDriver.SaveTask(task)
 }

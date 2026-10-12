@@ -25,3 +25,11 @@ func (db DB) GetUser(int64) (entities.User, error) {
 func (dn DB) SaveUser(entities.User) error {
 	return nil
 }
+
+func (db DB) GetTask(int64) (entities.Task, error) {
+	return entities.Task{}, nil
+}
+
+func (dn DB) SaveTask(entities.Task) error {
+	return nil
+}

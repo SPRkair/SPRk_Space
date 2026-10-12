@@ -40,3 +40,11 @@ func (c *Cache) GetUser(int64) (entities.User, error) {
 func (c *Cache) SaveUser(entities.User) error {
 	return nil
 }
+
+func (c *Cache) GetTask(int64) (entities.Task, error) {
+	return entities.Task{}, nil
+}
+
+func (c *Cache) SaveTask(entities.Task) error {
+	return nil
+}

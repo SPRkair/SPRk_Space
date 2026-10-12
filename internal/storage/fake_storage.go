@@ -29,3 +29,11 @@ func (fs *FakeStorage) GetUser(int64) (entities.User, error) {
 func (fs *FakeStorage) SaveUser(entities.User) error {
 	return nil
 }
+
+func (fs *FakeStorage) GetTask(int64) (entities.Task, error) {
+	return entities.Task{}, nil
+}
+
+func (fs *FakeStorage) SaveTask(entities.Task) error {
+	return nil
+}
