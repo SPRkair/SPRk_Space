@@ -23,30 +23,8 @@ type TaskStorageDriver interface {
 }
 
 type Storage struct {
-	User UserRepository
-	Task TaskRepository
-
-	storageDrivers *StorageDrivers
-}
-
-type StorageDrivers struct {
-	cache         *Cache
-	db            *DB
-	fakeStorage   *FakeStorage
-	currentDriver string
-}
-
-func (sd StorageDrivers) GetStorageDriver() (StorageDriver, error) {
-	switch sd.currentDriver {
-	case "DB":
-		return sd.db, nil
-	case "FakeStorage":
-		return sd.fakeStorage, nil
-	case "Cache":
-		return sd.cache, nil
-	default:
-		return sd.cache, fmt.Errorf("error: storage: GetStorageDriver: unknown storage driver %s", sd.currentDriver)
-	}
+	User *UserRepository
+	Task *TaskRepository
 }
 
 type UserRepository struct {
@@ -58,29 +36,22 @@ type TaskRepository struct {
 }
 
 func NewStorage(cfg *config.Storage, log logger.Logger) (*Storage, error) {
+	var sd StorageDriver
+	switch cfg.StorageDriver {
+	case "DB":
+		sd = newDB(&cfg.DB, log)
+	case "FakeStorage":
+		sd = newFakeStorage(&cfg.FakeStorage, log)
+	case "Cache":
+		sd = newCache(&cfg.Cache, log)
+	default:
+		return nil, fmt.Errorf("error: storage: GetStorageDriver: unknown storage driver: %s", cfg.StorageDriver)
+	}
 	storage := Storage{
-		storageDrivers: NewStorageDrivers(cfg, log),
+		User: &UserRepository{storageDriver: sd},
+		Task: &TaskRepository{storageDriver: sd},
 	}
-	storageDriver, err := storage.storageDrivers.GetStorageDriver()
-	if err != nil {
-		return nil, err
-	}
-	storage.User = UserRepository{storageDriver: storageDriver}
-	storage.Task = TaskRepository{storageDriver: storageDriver}
 	return &storage, nil
-}
-
-func NewStorageDrivers(cfg *config.Storage, log logger.Logger) *StorageDrivers {
-	cache := newCache(&cfg.Cache, log)
-	db := newDB(&cfg.DB, log)
-	fakestorage := newFakeStorage(&cfg.FakeStorage, log)
-	storageDrivers := StorageDrivers{
-		cache:         cache,
-		db:            db,
-		fakeStorage:   fakestorage,
-		currentDriver: cfg.StorageDriver,
-	}
-	return &storageDrivers
 }
 
 func (ur *UserRepository) Get(id int64) (entities.User, error) {
