@@ -19,6 +19,7 @@ type FakeStorage struct {
 
 func newFakeStorage(ctx context.Context, cfg *config.FakeStorage, log logger.Logger) (*FakeStorage, error) {
 	fakeStorage := FakeStorage{
+		ctx:       ctx,
 		config:    cfg,
 		logger:    log,
 		directory: cfg.DirectoryFakeStorage,
@@ -28,7 +29,7 @@ func newFakeStorage(ctx context.Context, cfg *config.FakeStorage, log logger.Log
 
 func (fs *FakeStorage) GetUser(ctx context.Context, id int64) (entities.User, error) {
 	users := []entities.User{}
-	users, err := utils.LoadFromJSON[[]entities.User](fs.config.DirectoryFakeStorage + "users.json")
+	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"users.json", &users)
 	if err != nil {
 		return entities.User{}, fmt.Errorf("FakeStorage: GetUser: %w", err)
 	}
@@ -42,7 +43,7 @@ func (fs *FakeStorage) GetUser(ctx context.Context, id int64) (entities.User, er
 
 func (fs *FakeStorage) GetUsers(ctx context.Context) ([]entities.User, error) {
 	users := []entities.User{}
-	users, err := utils.LoadFromJSON[[]entities.User](fs.config.DirectoryFakeStorage + "users.json")
+	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"users.json", &users)
 	if err != nil {
 		return nil, fmt.Errorf("FakeStorage: GetUser: %w", err)
 	}
@@ -50,7 +51,7 @@ func (fs *FakeStorage) GetUsers(ctx context.Context) ([]entities.User, error) {
 }
 
 func (fs *FakeStorage) SaveUser(ctx context.Context, user entities.User) error {
-	err := utils.SaveToJSON(fs.config.DirectoryFakeStorage+"users.json", user)
+	err := utils.SaveTo(fs.config.DirectoryFakeStorage+"users.json", user)
 	if err != nil {
 		return fmt.Errorf("FakeStorage: SaveUser: %w", err)
 	}
@@ -58,7 +59,7 @@ func (fs *FakeStorage) SaveUser(ctx context.Context, user entities.User) error {
 }
 
 func (fs *FakeStorage) SaveUsers(ctx context.Context, users []entities.User) error {
-	err := utils.SaveToJSON(fs.config.DirectoryFakeStorage+"users.json", users)
+	err := utils.SaveTo(fs.config.DirectoryFakeStorage+"users.json", users)
 	if err != nil {
 		return fmt.Errorf("FakeStorage: SaveUser: %w", err)
 	}

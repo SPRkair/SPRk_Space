@@ -5,18 +5,16 @@ import (
 	"path/filepath"
 )
 
-func LoadFrom(filename string, structure interface{}) error {
-	var err error
+func LoadFrom[T any](filename string, structure *T) error {
 	switch filepath.Ext(filename) {
 	case ".yaml":
 		return LoadFromYaml(filename, structure)
 	case ".json":
-		structure, err = LoadFromJSON[any](filename)
-		return err
+		return LoadFromJSON(filename, structure)
 	case ".ini":
 		return LoadFromIni(filename, structure)
 	default:
-		return fmt.Errorf("error: utils: LoadFrom: file type is missing or not supported")
+		return fmt.Errorf("error: utils: LoadFrom: %q: file type is missing or not supported", filename)
 	}
 }
 

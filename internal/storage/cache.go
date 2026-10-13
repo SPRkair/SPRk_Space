@@ -23,6 +23,7 @@ type UserCache struct {
 
 func newCache(ctx context.Context, cfg *config.Cache, log logger.Logger) (*Cache, error) {
 	cache := Cache{
+		ctx:       ctx,
 		config:    cfg,
 		logger:    log,
 		UserCache: &UserCache{},
