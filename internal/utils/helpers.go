@@ -18,7 +18,7 @@ func LoadFrom[T any](filename string, structure *T) error {
 	}
 }
 
-func SaveTo(filename string, structure interface{}) error {
+func SaveTo(filename string, structure any) error {
 	switch filepath.Ext(filename) {
 	case ".yaml":
 		return SaveToYaml(filename, structure)
