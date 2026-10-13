@@ -34,7 +34,8 @@ func (a App) Init() (app *App, err error) {
 	if err != nil {
 		a.logger.Fatal(err.Error())
 	}
-	a.services = services.NewServices(&a.config.Services, a.logger, a.storage)
+	a.logger.Println("Info", "Storage init complete")
+	a.services = services.NewServices(a.ctx, &a.config.Services, a.logger, a.storage)
 	return &a, nil
 }
 

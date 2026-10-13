@@ -40,8 +40,25 @@ func (fs *FakeStorage) GetUser(ctx context.Context, id int64) (entities.User, er
 	return entities.User{}, nil
 }
 
+func (fs *FakeStorage) GetUsers(ctx context.Context) ([]entities.User, error) {
+	users := []entities.User{}
+	users, err := utils.LoadFromJSON[[]entities.User](fs.config.DirectoryFakeStorage + "users.json")
+	if err != nil {
+		return nil, fmt.Errorf("FakeStorage: GetUser: %w", err)
+	}
+	return users, nil
+}
+
 func (fs *FakeStorage) SaveUser(ctx context.Context, user entities.User) error {
 	err := utils.SaveToJSON(fs.config.DirectoryFakeStorage+"users.json", user)
+	if err != nil {
+		return fmt.Errorf("FakeStorage: SaveUser: %w", err)
+	}
+	return nil
+}
+
+func (fs *FakeStorage) SaveUsers(ctx context.Context, users []entities.User) error {
+	err := utils.SaveToJSON(fs.config.DirectoryFakeStorage+"users.json", users)
 	if err != nil {
 		return fmt.Errorf("FakeStorage: SaveUser: %w", err)
 	}

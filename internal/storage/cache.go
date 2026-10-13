@@ -39,7 +39,15 @@ func (c *Cache) GetUser(ctx context.Context, id int64) (entities.User, error) {
 	return entities.User{}, nil
 }
 
+func (c *Cache) GetUsers(ctx context.Context) ([]entities.User, error) {
+	return nil, nil
+}
+
 func (c *Cache) SaveUser(ctx context.Context, user entities.User) error {
+	return nil
+}
+
+func (c *Cache) SaveUsers(ctx context.Context, users []entities.User) error {
 	return nil
 }
 

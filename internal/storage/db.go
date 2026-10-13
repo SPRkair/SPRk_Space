@@ -26,7 +26,15 @@ func (db DB) GetUser(ctx context.Context, id int64) (entities.User, error) {
 	return entities.User{}, nil
 }
 
+func (db DB) GetUsers(ctx context.Context) ([]entities.User, error) {
+	return nil, nil
+}
+
 func (dn DB) SaveUser(ctx context.Context, user entities.User) error {
+	return nil
+}
+
+func (dn DB) SaveUsers(ctx context.Context, users []entities.User) error {
 	return nil
 }
 

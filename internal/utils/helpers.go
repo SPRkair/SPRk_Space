@@ -6,11 +6,13 @@ import (
 )
 
 func LoadFrom(filename string, structure interface{}) error {
+	var err error
 	switch filepath.Ext(filename) {
 	case ".yaml":
 		return LoadFromYaml(filename, structure)
 	case ".json":
-		return LoadFromJSON(filename, structure)
+		structure, err = LoadFromJSON[any](filename)
+		return err
 	case ".ini":
 		return LoadFromIni(filename, structure)
 	default:

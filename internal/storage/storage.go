@@ -17,7 +17,9 @@ type StorageDriver interface {
 
 type UserStorageDriver interface {
 	GetUser(context.Context, int64) (entities.User, error)
+	GetUsers(context.Context) ([]entities.User, error)
 	SaveUser(context.Context, entities.User) error
+	SaveUsers(context.Context, []entities.User) error
 }
 
 type TaskStorageDriver interface {

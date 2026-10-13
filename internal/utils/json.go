@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,7 +15,9 @@ func LoadFromJSON[T any](filename string) (T, error) {
 	if err != nil {
 		return result, fmt.Errorf("error: utils: LoadFromJSON: ReadFile: %q: %w", filename, err)
 	}
-
+	if len(bytes.TrimSpace(data)) == 0 {
+		return result, nil
+	}
 	err = json.Unmarshal(data, &result)
 	if err != nil {
 		return result, fmt.Errorf("error: utils: LoadFromJSON: Unmarshal: %q: %w", filename, err)
