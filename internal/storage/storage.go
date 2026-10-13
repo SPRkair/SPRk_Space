@@ -6,28 +6,29 @@ import (
 	"SPRk_Space/internal/logger"
 	"context"
 	"fmt"
+	"io"
 )
 
 type StorageDriver interface {
 	UserStorageDriver
 	TaskStorageDriver
+	io.Closer
 }
 
 type UserStorageDriver interface {
-	GetUser(int64) (entities.User, error)
-	SaveUser(entities.User) error
-	Close() error
+	GetUser(context.Context, int64) (entities.User, error)
+	SaveUser(context.Context, entities.User) error
 }
 
 type TaskStorageDriver interface {
-	GetTask(int64) (entities.Task, error)
-	SaveTask(entities.Task) error
-	Close() error
+	GetTask(context.Context, int64) (entities.Task, error)
+	SaveTask(context.Context, entities.Task) error
 }
 
 type Storage struct {
-	User UserStorageDriver
-	Task TaskStorageDriver
+	User   UserStorageDriver
+	Task   TaskStorageDriver
+	closer io.Closer
 }
 
 func NewStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*Storage, error) {
@@ -37,25 +38,23 @@ func NewStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*S
 	case config.DriverDB:
 		sd, err = newDB(ctx, &cfg.DB, log)
 	case config.DriverFakeStorage:
-		sd, err = newFakeStorage(&cfg.FakeStorage, log)
+		sd, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
 	case config.DriverCache:
-		sd, err = newCache(&cfg.Cache, log)
+		sd, err = newCache(ctx, &cfg.Cache, log)
 	default:
-		return nil, fmt.Errorf("storage: NewStorage: unknown storage driver: %s", cfg.StorageDriver)
+		return nil, fmt.Errorf("storage: NewStorage: unknown storage driver: %q", cfg.StorageDriver)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("storage: NewStorage: new %s driver: %w", cfg.StorageDriver, err)
 	}
 	storage := Storage{
-		User: sd,
-		Task: sd,
+		User:   sd,
+		Task:   sd,
+		closer: sd,
 	}
 	return &storage, nil
 }
 
-func (s *Storage) Close() []error {
-	var err []error
-	err = append(err, s.User.Close())
-	err = append(err, s.Task.Close())
-	return err
+func (s *Storage) Close() error {
+	return s.closer.Close()
 }

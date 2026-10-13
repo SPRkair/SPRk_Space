@@ -14,25 +14,27 @@ type DB struct {
 }
 
 func newDB(ctx context.Context, cfg *config.DB, log logger.Logger) (*DB, error) {
-	db := DB{config: cfg,
-		log: log,
+	db := DB{
+		ctx:    ctx,
+		config: cfg,
+		log:    log,
 	}
 	return &db, nil
 }
 
-func (db DB) GetUser(int64) (entities.User, error) {
+func (db DB) GetUser(ctx context.Context, id int64) (entities.User, error) {
 	return entities.User{}, nil
 }
 
-func (dn DB) SaveUser(entities.User) error {
+func (dn DB) SaveUser(ctx context.Context, user entities.User) error {
 	return nil
 }
 
-func (db DB) GetTask(int64) (entities.Task, error) {
+func (db DB) GetTask(ctx context.Context, id int64) (entities.Task, error) {
 	return entities.Task{}, nil
 }
 
-func (dn DB) SaveTask(entities.Task) error {
+func (dn DB) SaveTask(ctx context.Context, task entities.Task) error {
 	return nil
 }
 
