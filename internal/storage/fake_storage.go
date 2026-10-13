@@ -4,7 +4,9 @@ import (
 	"SPRk_Space/internal/config"
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
+	"SPRk_Space/internal/utils"
 	"context"
+	"fmt"
 )
 
 type FakeStorage struct {
@@ -25,10 +27,24 @@ func newFakeStorage(ctx context.Context, cfg *config.FakeStorage, log logger.Log
 }
 
 func (fs *FakeStorage) GetUser(ctx context.Context, id int64) (entities.User, error) {
+	users := []entities.User{}
+	users, err := utils.LoadFromJSON[[]entities.User](fs.config.DirectoryFakeStorage + "users.json")
+	if err != nil {
+		return entities.User{}, fmt.Errorf("FakeStorage: GetUser: %w", err)
+	}
+	for i, user := range users {
+		if user.Id == id {
+			return users[i], nil
+		}
+	}
 	return entities.User{}, nil
 }
 
 func (fs *FakeStorage) SaveUser(ctx context.Context, user entities.User) error {
+	err := utils.SaveToJSON(fs.config.DirectoryFakeStorage+"users.json", user)
+	if err != nil {
+		return fmt.Errorf("FakeStorage: SaveUser: %w", err)
+	}
 	return nil
 }
 

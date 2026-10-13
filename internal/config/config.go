@@ -95,7 +95,7 @@ func getDefaultConfig() Config {
 				Field2: "",
 			},
 			FakeStorage: FakeStorage{
-				DirectoryFakeStorage: "../TestStorage/",
+				DirectoryFakeStorage: "./TestStorage/",
 			},
 		},
 		Services: Services{
