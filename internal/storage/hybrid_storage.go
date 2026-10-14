@@ -5,7 +5,6 @@ import (
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
 	"context"
-	"fmt"
 	"sync"
 )
 
@@ -19,30 +18,14 @@ type HybridStorage struct {
 	additionalStorage *StorageDriver
 }
 
-func newHybridStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*HybridStorage, error) {
-	var additionalStorage StorageDriver
-	var err error
-	switch cfg.HybridStorage.AdditionalStorage {
-	case config.DriverDB:
-		additionalStorage, err = newDB(ctx, &cfg.DB, log)
-	case config.DriverFakeStorage:
-		additionalStorage, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
-	default:
-		return nil, fmt.Errorf("cache: newCache: unknown storage driver: %q", cfg.HybridStorage.AdditionalStorage, err)
-	}
-	cache := Cache{
-		ctx:       ctx,
-		config:    &cfg.Cache,
-		logger:    log,
-		UserCache: &UserCache{},
-	}
+func newHybridStorage(ctx context.Context, cfg *config.HybridStorage, log logger.Logger, cache *Cache, additionalStorageDriver StorageDriver) (*HybridStorage, error) {
 	hybridStorage := HybridStorage{
 		ctx:    ctx,
-		config: &cfg.HybridStorage,
+		config: cfg,
 		logger: log,
 
-		cache:             &cache,
-		additionalStorage: &additionalStorage,
+		cache:             cache,
+		additionalStorage: &additionalStorageDriver,
 	}
 	return &hybridStorage, nil
 }

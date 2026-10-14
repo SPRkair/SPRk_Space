@@ -9,9 +9,10 @@ import (
 type StorageDriverType string
 
 const (
-	DriverDB          StorageDriverType = "DB"
-	DriverCache       StorageDriverType = "Cache"
-	DriverFakeStorage StorageDriverType = "FakeStorage"
+	DriverDB            StorageDriverType = "DB"
+	DriverCache         StorageDriverType = "Cache"
+	DriverFakeStorage   StorageDriverType = "FakeStorage"
+	DriverHybridStorage StorageDriverType = "HybridStorage"
 )
 
 type Config struct {
