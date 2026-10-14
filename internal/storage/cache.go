@@ -15,10 +15,15 @@ type Cache struct {
 	logger logger.Logger
 
 	UserCache *UserCache
+	TaskCache *TaskCache
 }
 
 type UserCache struct {
 	Users map[int64]*entities.User
+}
+
+type TaskCache struct {
+	Tasks map[int64]*entities.Task
 }
 
 func newCache(ctx context.Context, cfg *config.Cache, log logger.Logger) (*Cache, error) {

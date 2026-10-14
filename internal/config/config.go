@@ -26,6 +26,7 @@ type Storage struct {
 	Cache         Cache             `json:"cache" yaml:"cache" ini:"cache"`
 	DB            DB                `json:"db" yaml:"db" ini:"db"`
 	FakeStorage   FakeStorage       `json:"fakestorage" yaml:"fakestorage" ini:"fakestorage"`
+	HybridStorage HybridStorage     `json:"hybridstorage" yaml:"hybridstorage" ini:"hybridstorage"`
 }
 
 type HTTP struct {
@@ -53,6 +54,10 @@ type Services struct {
 
 type Cache struct {
 	AutoDownloadFile bool `json:"auto_download_file" yaml:"auto_download_file" ini:"auto_download_file"`
+}
+
+type HybridStorage struct {
+	AdditionalStorage StorageDriverType `json:"additionalstorage" yaml:"additionalstorage" ini:"additionalstorage"`
 }
 
 type Executor struct {
@@ -96,6 +101,9 @@ func getDefaultConfig() Config {
 			},
 			FakeStorage: FakeStorage{
 				DirectoryFakeStorage: "./TestStorage/",
+			},
+			HybridStorage: HybridStorage{
+				AdditionalStorage: DriverFakeStorage,
 			},
 		},
 		Services: Services{
