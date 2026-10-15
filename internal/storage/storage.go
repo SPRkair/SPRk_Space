@@ -5,8 +5,14 @@ import (
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
 	"context"
+	"errors"
 	"fmt"
 	"io"
+)
+
+var (
+	ErrUserNotFound  = errors.New("user not found")
+	ErrUsersNotFound = errors.New("users not found")
 )
 
 type StorageDriver interface {
@@ -20,6 +26,8 @@ type UserStorageDriver interface {
 	GetUsers(context.Context) ([]entities.User, error)
 	SaveUser(context.Context, entities.User) error
 	SaveUsers(context.Context, []entities.User) error
+	UpdateUser(context.Context, entities.User) error
+	DeleteUser(context.Context, int64) error
 }
 
 type TaskStorageDriver interface {

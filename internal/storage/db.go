@@ -38,6 +38,14 @@ func (dn DB) SaveUsers(ctx context.Context, users []entities.User) error {
 	return nil
 }
 
+func (db DB) UpdateUser(ctx context.Context, users entities.User) error {
+	return nil
+}
+
+func (db DB) DeleteUser(ctx context.Context, id int64) error {
+	return nil
+}
+
 func (db DB) GetTask(ctx context.Context, id int64) (entities.Task, error) {
 	return entities.Task{}, nil
 }

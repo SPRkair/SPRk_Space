@@ -17,7 +17,6 @@ func LoadFromIni(filename string, structure interface{}) error {
 	if err != nil {
 		return fmt.Errorf("error: utils: LoadFromIni: Load: %w", err)
 	}
-
 	err = cfg.MapTo(structure)
 	if err != nil {
 		return fmt.Errorf("error: utils: LoadFromIni: MapTo: %w", err)
@@ -36,6 +35,25 @@ func SaveToIni(filename string, structure interface{}) error {
 	err = cfg.SaveTo(filename)
 	if err != nil {
 		return fmt.Errorf("error: utils: SaveToIni: SaveTo: %w", err)
+	}
+
+	return nil
+}
+
+func AppendToIni(filename string, structure interface{}) error {
+	cfg, err := ini.Load(filename)
+	if err != nil {
+		return fmt.Errorf("error: utils: AppendToIni: Load: %q: %w", filename, err)
+	}
+
+	err = cfg.ReflectFrom(structure)
+	if err != nil {
+		return fmt.Errorf("error: utils: AppendToIni: ReflectFrom: %q: %w", filename, err)
+	}
+
+	err = cfg.SaveTo(filename)
+	if err != nil {
+		return fmt.Errorf("error: utils: AppendToIni: SaveTo: %q: %w", filename, err)
 	}
 
 	return nil

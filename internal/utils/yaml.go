@@ -34,3 +34,17 @@ func SaveToYaml(filename string, structure interface{}) error {
 
 	return nil
 }
+
+func AppendToYaml(filename string, structure interface{}) error {
+	var existing []interface{}
+	if err := LoadFromYaml(filename, &existing); err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("error: utils: AppendToYaml: Load: %q: %w", filename, err)
+		}
+	}
+	existing = append(existing, structure)
+	if err := SaveToYaml(filename, existing); err != nil {
+		return fmt.Errorf("error: utils: AppendToYaml: Save: %q: %w", filename, err)
+	}
+	return nil
+}

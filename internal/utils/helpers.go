@@ -30,3 +30,16 @@ func SaveTo(filename string, structure any) error {
 		return fmt.Errorf("error: utils: SaveTo: file type is missing or not supported")
 	}
 }
+
+func AppendTo(filename string, structure any) error {
+	switch filepath.Ext(filename) {
+	case ".yaml":
+		return AppendToYaml(filename, structure)
+	case ".json":
+		return AppendToJSON(filename, structure)
+	case ".ini":
+		return AppendToIni(filename, structure)
+	default:
+		return fmt.Errorf("error: utils: AppendTo: file type is missing or not supported")
+	}
+}

@@ -61,3 +61,19 @@ func SaveToJSON(filename string, structure any) error {
 
 	return nil
 }
+
+func AppendToJSON(filename string, structure any) error {
+	var records []json.RawMessage
+	if err := LoadFromJSON(filename, &records); err != nil {
+		return fmt.Errorf("error: utils: AppendToJSON: Load: %q: %w", filename, err)
+	}
+	record, err := json.Marshal(structure)
+	if err != nil {
+		return fmt.Errorf("error: utils: AppendToJSON: Marshal: %q: %w", filename, err)
+	}
+	records = append(records, record)
+	if err := SaveToJSON(filename, records); err != nil {
+		return fmt.Errorf("error: utils: AppendToJSON: Save: %q: %w", filename, err)
+	}
+	return nil
+}

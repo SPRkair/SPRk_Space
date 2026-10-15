@@ -5,13 +5,7 @@ import (
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
 	"context"
-	"errors"
 	"sync"
-)
-
-var (
-	ErrUserNotFound  = errors.New("user not found")
-	ErrUsersNotFound = errors.New("users not found")
 )
 
 type Cache struct {
@@ -92,6 +86,13 @@ func (c *Cache) UpdateUser(ctx context.Context, user entities.User) error {
 		return ErrUserNotFound
 	}
 	c.userCache.users[user.Id] = &user
+	return nil
+}
+
+func (c *Cache) DeleteUser(ctx context.Context, id int64) error {
+	c.userCache.mu.Lock()
+	defer c.userCache.mu.Unlock()
+	delete(c.userCache.users, id)
 	return nil
 }
 
