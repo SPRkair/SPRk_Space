@@ -32,13 +32,14 @@ func (fs *FakeService) test_get_from_cache_and_fake() error {
 	}
 	err = fs.Users.Test("1-1")
 	fs.log.Printf("debug_value", "test-2-1: ", fs.Users)
-	fs.log.Println("Value: ", user)
+	fs.log.Printf("debug_value", "test-3-1: ", user)
 	user.Name = user.Name + "!!!"
-	fs.log.Println("Value: ", user)
+	fs.log.Printf("debug_value", "test-3-2: ", user)
 	err = fs.Users.UpdateUser(fs.ctx, user)
 	if err != nil {
 		fs.log.Printf("Error", " UpdateUser : %w", err)
 	}
+	err = fs.Users.Test("1-2")
 	fs.log.Printf("debug_value", "test-2-2: ", fs.Users)
 	return nil
 }
