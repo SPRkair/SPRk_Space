@@ -122,6 +122,10 @@ func (fs *FakeStorage) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
+func (fs *FakeStorage) Test(_ string) error {
+	return nil
+}
+
 func (fs *FakeStorage) GetTask(ctx context.Context, id int64) (entities.Task, error) {
 	return entities.Task{}, nil
 }

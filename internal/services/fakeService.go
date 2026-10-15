@@ -17,10 +17,30 @@ type FakeService struct {
 
 func (fs *FakeService) Run() {
 	fs.log.Println("Info", "FakeService Run")
-	err := fs.test_load_and_save_user()
+	err := fs.test_get_from_cache_and_fake()
 	if err != nil {
 		fs.log.Printf("Error", "FakeService: Run: ", err)
 	}
+}
+
+func (fs *FakeService) test_get_from_cache_and_fake() error {
+	fs.log.Printf("debug_value", "test0: ", fs.Users)
+	err := fs.Users.Test("1-0")
+	user, err := fs.Users.GetUser(fs.ctx, 8062)
+	if err != nil {
+		fs.log.Printf("Error", " GetUser : %w", err)
+	}
+	err = fs.Users.Test("1-1")
+	fs.log.Printf("debug_value", "test-2-1: ", fs.Users)
+	fs.log.Println("Value: ", user)
+	user.Name = user.Name + "!!!"
+	fs.log.Println("Value: ", user)
+	err = fs.Users.UpdateUser(fs.ctx, user)
+	if err != nil {
+		fs.log.Printf("Error", " UpdateUser : %w", err)
+	}
+	fs.log.Printf("debug_value", "test-2-2: ", fs.Users)
+	return nil
 }
 
 func (fs *FakeService) test_load_and_save_user() error {

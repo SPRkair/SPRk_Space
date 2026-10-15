@@ -96,6 +96,10 @@ func (c *Cache) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
+func (c *Cache) Test(string) error {
+	return nil
+}
+
 func (c *Cache) GetTask(ctx context.Context, id int64) (entities.Task, error) {
 	return entities.Task{}, nil
 }

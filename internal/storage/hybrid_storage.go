@@ -104,6 +104,14 @@ func (hs *HybridStorage) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
+func (hs *HybridStorage) Test(prefix string) error {
+	hs.logger.Printf("debug_value", "Test-%s", prefix)
+	for i, u := range hs.cache.userCache.users {
+		hs.logger.Printf("debug_value", "Test-%s: %d : %q", prefix, i, &u)
+	}
+	return nil
+}
+
 func (hs *HybridStorage) GetTask(ctx context.Context, id int64) (entities.Task, error) {
 	return entities.Task{}, nil
 }

@@ -92,7 +92,7 @@ func getDefaultConfig() Config {
 			Field2: "",
 		},
 		Storage: Storage{
-			StorageDriver: DriverFakeStorage,
+			StorageDriver: DriverHybridStorage,
 			Cache: Cache{
 				AutoDownloadFile: true,
 			},

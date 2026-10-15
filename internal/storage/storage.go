@@ -28,6 +28,7 @@ type UserStorageDriver interface {
 	SaveUsers(context.Context, []entities.User) error
 	UpdateUser(context.Context, entities.User) error
 	DeleteUser(context.Context, int64) error
+	Test(string) error
 }
 
 type TaskStorageDriver interface {
@@ -48,20 +49,26 @@ func NewStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*S
 	switch cfg.StorageDriver {
 	case config.DriverDB:
 		sd, err = newDB(ctx, &cfg.DB, log)
+		log.Printf("info", "init DB...")
 	case config.DriverFakeStorage:
 		sd, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
+		log.Printf("info", "init FakeStorage...")
 	case config.DriverCache:
 		sd, err = newCache(ctx, &cfg.Cache, log)
+		log.Printf("info", "init Cache...")
 	case config.DriverHybridStorage:
 		cache, err := newCache(ctx, &cfg.Cache, log)
+		log.Printf("info", "init hybrid Cache...")
 		if err != nil {
 			return nil, fmt.Errorf("storage: NewStorage: newCache: %q", err)
 		}
 		switch cfg.HybridStorage.AdditionalStorage {
 		case config.DriverDB:
 			asd, err = newDB(ctx, &cfg.DB, log)
+			log.Printf("info", "init DB...")
 		case config.DriverFakeStorage:
 			asd, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
+			log.Printf("info", "init FakeStorage...")
 		default:
 			return nil, fmt.Errorf("storage: NewStorage: unknown Additional Storage driver: %q, %w", cfg.HybridStorage.AdditionalStorage, err)
 		}
