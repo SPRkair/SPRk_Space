@@ -105,9 +105,9 @@ func (hs *HybridStorage) DeleteUser(ctx context.Context, id int64) error {
 }
 
 func (hs *HybridStorage) Test(prefix string) error {
-	hs.logger.Printf("debug_value", "Test-%s", prefix)
+	hs.logger.Printf("debug_value", "Cache Test-%s", prefix)
 	for i, u := range hs.cache.userCache.users {
-		hs.logger.Printf("debug_value", "Test-%s: %d : %q", prefix, i, &u)
+		hs.logger.Printf("debug_value", "Cache Test-%s: value: %d : %v", prefix, i, &u)
 	}
 	return nil
 }
