@@ -10,7 +10,7 @@ import (
 type Services struct {
 	ctx     context.Context
 	Config  *config.Services
-	log     logger.Logger
+	logger  logger.Logger
 	Storage *storage.Storage
 
 	CacheSync   *CacheSync
@@ -27,19 +27,23 @@ type Executor struct {
 func NewServices(ctx context.Context, cfg *config.Services, log logger.Logger, storage *storage.Storage) *Services {
 	services := Services{
 		Config:  cfg,
-		log:     log,
+		logger:  log,
 		Storage: storage,
 		FakeService: &FakeService{
-			ctx:   ctx,
-			log:   log,
-			Users: storage.User,
+			ctx:    ctx,
+			logger: log,
+			Users:  storage.User,
 		},
 	}
 	return &services
 }
 
 func (s Services) Run() {
-	s.log.Println("Info", "Services Run...")
+	s.logger.Info("Services Run...")
 	s.FakeService.Run()
-	s.log.Println("Info", "Services Run Complete.")
+	s.logger.Info("Services Run Complete.")
+}
+
+func (s Services) Close() {
+	s.logger.Debug_info("Services Close")
 }

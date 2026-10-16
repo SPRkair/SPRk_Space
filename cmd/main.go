@@ -2,7 +2,6 @@ package main
 
 import (
 	app "SPRk_Space/internal"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,7 +10,6 @@ import (
 func main() {
 	a, err := app.App{}.Init()
 	if err != nil {
-		fmt.Println("Error: main: App: Init")
 		panic("Error: main: App.Init:")
 	}
 

@@ -29,3 +29,7 @@ func NewCli(ctx context.Context, cfg *config.Cli, log logger.Logger) (Cli, error
 func (c Cli) Run() {
 
 }
+
+func (c Cli) Close() {
+	c.logger.Debug_info("Cli Close")
+}

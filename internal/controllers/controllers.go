@@ -10,6 +10,7 @@ import (
 
 type Controller interface {
 	Run()
+	Close()
 }
 
 type Controllers struct {

@@ -45,7 +45,7 @@ func (hs *HybridStorage) GetUser(ctx context.Context, id int64) (entities.User, 
 		}
 		err := hs.cache.SaveUser(ctx, user)
 		if err != nil {
-			hs.logger.Printf("Error", "storage: HybridStorage: GetUser: %q, %w", id, err)
+			hs.logger.Error("storage: HybridStorage: GetUser: %q, %w", id, err)
 		}
 		return user, nil
 	}
@@ -67,7 +67,7 @@ func (hs *HybridStorage) SaveUser(ctx context.Context, user entities.User) error
 	}
 	err = hs.cache.SaveUser(ctx, user)
 	if err != nil {
-		hs.logger.Printf("Error", "storage: HybridStorage: cache.SaveUser: %v", err)
+		hs.logger.Error("storage: HybridStorage: cache.SaveUser: %v", err)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (hs *HybridStorage) SaveUsers(ctx context.Context, users []entities.User) e
 	}
 	err = hs.cache.SaveUsers(ctx, users)
 	if err != nil {
-		hs.logger.Printf("Error", "storage: HybridStorage: cache.SaveUsers: %v", err)
+		hs.logger.Error("storage: HybridStorage: cache.SaveUsers: %v", err)
 	}
 	return nil
 }
@@ -89,7 +89,7 @@ func (hs *HybridStorage) UpdateUser(ctx context.Context, user entities.User) err
 		return fmt.Errorf("storage: HybridStorage: additionalStorage.UpdateUser: %w", err)
 	}
 	if err := hs.cache.DeleteUser(ctx, user.Id); err != nil {
-		hs.logger.Printf("Error", "cache delete failed: id: %q, %v", user.Id, err)
+		hs.logger.Error("cache delete failed: id: %q, %v", user.Id, err)
 	}
 	return nil
 }
@@ -99,15 +99,15 @@ func (hs *HybridStorage) DeleteUser(ctx context.Context, id int64) error {
 		return fmt.Errorf("storage: HybridStorage: additionalStorage.DeleteUser: %w", err)
 	}
 	if err := hs.cache.DeleteUser(ctx, id); err != nil {
-		hs.logger.Printf("Error", "cache delete failed", "id", id, "err", err)
+		hs.logger.Error("cache delete failed", "id", id, "err", err)
 	}
 	return nil
 }
 
 func (hs *HybridStorage) Test(prefix string) error {
-	hs.logger.Printf("debug_value", "Cache Test-%s", prefix)
+	hs.logger.Debug_value("Cache Test-%s", prefix)
 	for i, u := range hs.cache.userCache.users {
-		hs.logger.Printf("debug_value", "Cache Test-%s: value: %d : %v", prefix, i, *u)
+		hs.logger.Debug_value("Cache Test-%s: value: %d : %v", prefix, i, *u)
 	}
 	return nil
 }
@@ -121,5 +121,6 @@ func (hs *HybridStorage) SaveTask(ctx context.Context, task entities.Task) error
 }
 
 func (hs *HybridStorage) Close() error {
+	hs.logger.Debug_info("HybridStorage Close")
 	return nil
 }

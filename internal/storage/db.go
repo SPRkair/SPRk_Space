@@ -10,14 +10,14 @@ import (
 type DB struct {
 	ctx    context.Context
 	config *config.DB
-	log    logger.Logger
+	logger logger.Logger
 }
 
 func newDB(ctx context.Context, cfg *config.DB, log logger.Logger) (*DB, error) {
 	db := DB{
 		ctx:    ctx,
 		config: cfg,
-		log:    log,
+		logger: log,
 	}
 	return &db, nil
 }
@@ -59,5 +59,6 @@ func (db *DB) Close() error {
 }
 
 func (db *DB) Test(string) error {
+	db.logger.Debug_info("db Close")
 	return nil
 }

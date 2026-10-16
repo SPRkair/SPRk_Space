@@ -19,22 +19,25 @@ type App struct {
 }
 
 func (a App) Init() (app *App, err error) {
-	err = utils.LoadFromEnv(".env")
+	err = utils.LoadEnvFile(".env")
 	if err != nil {
 		fmt.Print("error: app: Init: LoadFromEnv: ", err)
 		panic("error: app: Init: LoadFromEnv: ")
 	}
-	a.logger = logger.NewLogger()
 	a.config, err = config.NewConfig()
 	if err != nil {
-		a.logger.Println("Error", "app: Init: Config: NewConfig: ", err)
-		a.logger.Println("Info", "Default config accepted ")
+		fmt.Print("Error: app: Init: Config: NewConfig: ", err)
+		fmt.Print("Info: Default config accepted ")
+	}
+	a.logger, err = logger.NewLogger(&a.config.Logger)
+	if err != nil {
+		panic(fmt.Sprintf("error: app: Init: LoadFromEnv: %w", err))
 	}
 	a.storage, err = storage.NewStorage(a.ctx, &a.config.Storage, a.logger)
 	if err != nil {
 		a.logger.Fatal(err.Error())
 	}
-	a.logger.Println("Info", "Storage init complete")
+	a.logger.Info("Storage init complete")
 	a.services = services.NewServices(a.ctx, &a.config.Services, a.logger, a.storage)
 	return &a, nil
 }

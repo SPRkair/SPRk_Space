@@ -6,10 +6,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func LoadFromEnv(filename string) error {
+func LoadEnvFile(filename string) error {
 	err := godotenv.Load(filename)
 	if err != nil {
-		return fmt.Errorf("error: utils: LoadFromEnv: Load:  %w", err)
+		return fmt.Errorf("utils: LoadFromEnv: Load: %s: %w", filename, err)
 	}
 	return nil
 }

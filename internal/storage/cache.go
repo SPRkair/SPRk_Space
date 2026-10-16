@@ -109,5 +109,6 @@ func (c *Cache) SaveTask(ctx context.Context, task entities.Task) error {
 }
 
 func (c *Cache) Close() error {
+	c.logger.Debug_info("Cache Close")
 	return nil
 }

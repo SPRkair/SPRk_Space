@@ -17,9 +17,16 @@ const (
 
 type Config struct {
 	App         App         `json:"app" yaml:"app" ini:"app"`
+	Logger      Logger      `json:"logger" yaml:"logger" ini:"logger"`
 	Storage     Storage     `json:"storage" yaml:"storage" ini:"storage"`
 	Services    Services    `json:"service" yaml:"service" ini:"service"`
 	Controllers Controllers `json:"controllers" yaml:"controllers" ini:"controllers"`
+}
+
+type Logger struct {
+	Write_file   bool   `json:"write_file" yaml:"write_file" ini:"write_file"`
+	Log_dir      string `json:"log_dir" yaml:"log_dir" ini:"log_dir"`
+	Log_filename string `json:"log_filename" yaml:"log_filename" ini:"log_filename"`
 }
 
 type Storage struct {
@@ -102,6 +109,11 @@ func getDefaultConfig() Config {
 		App: App{
 			Field1: "",
 			Field2: "",
+		},
+		Logger: Logger{
+			Log_dir:      "./log/",
+			Log_filename: ".log",
+			Write_file:   true,
 		},
 		Storage: Storage{
 			StorageDriver: DriverHybridStorage,

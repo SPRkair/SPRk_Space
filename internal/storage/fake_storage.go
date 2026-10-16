@@ -134,5 +134,6 @@ func (fs *FakeStorage) SaveTask(ctx context.Context, task entities.Task) error {
 	return nil
 }
 func (fs *FakeStorage) Close() error {
+	fs.logger.Debug_info("FakeStorage Close")
 	return nil
 }
