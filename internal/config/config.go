@@ -16,10 +16,10 @@ const (
 )
 
 type Config struct {
-	App      App      `json:"app" yaml:"app" ini:"app"`
-	HTTP     HTTP     `json:"http" yaml:"http" ini:"http"`
-	Storage  Storage  `json:"storage" yaml:"storage" ini:"storage"`
-	Services Services `json:"service" yaml:"service" ini:"service"`
+	App         App         `json:"app" yaml:"app" ini:"app"`
+	Storage     Storage     `json:"storage" yaml:"storage" ini:"storage"`
+	Services    Services    `json:"service" yaml:"service" ini:"service"`
+	Controllers Controllers `json:"controllers" yaml:"controllers" ini:"controllers"`
 }
 
 type Storage struct {
@@ -28,11 +28,6 @@ type Storage struct {
 	DB            DB                `json:"db" yaml:"db" ini:"db"`
 	FakeStorage   FakeStorage       `json:"fakestorage" yaml:"fakestorage" ini:"fakestorage"`
 	HybridStorage HybridStorage     `json:"hybridstorage" yaml:"hybridstorage" ini:"hybridstorage"`
-}
-
-type HTTP struct {
-	Field1 string `json:"field1" yaml:"field1" ini:"field1"`
-	Field2 string `json:"field2" yaml:"field2" ini:"field2"`
 }
 
 type DB struct {
@@ -51,6 +46,27 @@ type App struct {
 
 type Services struct {
 	Executor Executor `json:"executor" yaml:"executor" ini:"executor"`
+}
+
+type Controllers struct {
+	HTTP     HTTP     `json:"http" yaml:"http" ini:"http"`
+	Telegram Telegram `json:"telegram" yaml:"telegram" ini:"telegram"`
+	Cli      Cli      `json:"cli" yaml:"cli" ini:"cli"`
+}
+
+type HTTP struct {
+	Field1 string `json:"field1" yaml:"field1" ini:"field1"`
+	Field2 string `json:"field2" yaml:"field2" ini:"field2"`
+}
+
+type Telegram struct {
+	Field1 string `json:"field1" yaml:"field1" ini:"field1"`
+	Field2 string `json:"field2" yaml:"field2" ini:"field2"`
+}
+
+type Cli struct {
+	Field1 string `json:"field1" yaml:"field1" ini:"field1"`
+	Field2 string `json:"field2" yaml:"field2" ini:"field2"`
 }
 
 type Cache struct {
@@ -87,10 +103,6 @@ func getDefaultConfig() Config {
 			Field1: "",
 			Field2: "",
 		},
-		HTTP: HTTP{
-			Field1: "",
-			Field2: "",
-		},
 		Storage: Storage{
 			StorageDriver: DriverHybridStorage,
 			Cache: Cache{
@@ -112,6 +124,20 @@ func getDefaultConfig() Config {
 				CacheSyncWaitDuration: 60,
 				TaskWaitDuration:      100,
 				LogSaverWaitDuration:  100,
+			},
+		},
+		Controllers: Controllers{
+			HTTP: HTTP{
+				Field1: "",
+				Field2: "",
+			},
+			Telegram: Telegram{
+				Field1: "",
+				Field2: "",
+			},
+			Cli: Cli{
+				Field1: "",
+				Field2: "",
 			},
 		},
 	}

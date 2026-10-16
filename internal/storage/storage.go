@@ -37,6 +37,9 @@ type TaskStorageDriver interface {
 }
 
 type Storage struct {
+	ctx    context.Context
+	config *config.Storage
+	logger logger.Logger
 	User   UserStorageDriver
 	Task   TaskStorageDriver
 	closer io.Closer
@@ -48,27 +51,27 @@ func NewStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*S
 	var err error
 	switch cfg.StorageDriver {
 	case config.DriverDB:
-		sd, err = newDB(ctx, &cfg.DB, log)
 		log.Printf("info", "init DB...")
+		sd, err = newDB(ctx, &cfg.DB, log)
 	case config.DriverFakeStorage:
-		sd, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
 		log.Printf("info", "init FakeStorage...")
+		sd, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
 	case config.DriverCache:
-		sd, err = newCache(ctx, &cfg.Cache, log)
 		log.Printf("info", "init Cache...")
+		sd, err = newCache(ctx, &cfg.Cache, log)
 	case config.DriverHybridStorage:
-		cache, err := newCache(ctx, &cfg.Cache, log)
 		log.Printf("info", "init hybrid Cache...")
+		cache, err := newCache(ctx, &cfg.Cache, log)
 		if err != nil {
 			return nil, fmt.Errorf("storage: NewStorage: newCache: %q", err)
 		}
 		switch cfg.HybridStorage.AdditionalStorage {
 		case config.DriverDB:
-			asd, err = newDB(ctx, &cfg.DB, log)
 			log.Printf("info", "init DB...")
+			asd, err = newDB(ctx, &cfg.DB, log)
 		case config.DriverFakeStorage:
-			asd, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
 			log.Printf("info", "init FakeStorage...")
+			asd, err = newFakeStorage(ctx, &cfg.FakeStorage, log)
 		default:
 			return nil, fmt.Errorf("storage: NewStorage: unknown Additional Storage driver: %q, %w", cfg.HybridStorage.AdditionalStorage, err)
 		}
@@ -80,6 +83,9 @@ func NewStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*S
 		return nil, fmt.Errorf("storage: NewStorage: new %s driver: %w", cfg.StorageDriver, err)
 	}
 	storage := Storage{
+		ctx:    ctx,
+		config: cfg,
+		logger: log,
 		User:   sd,
 		Task:   sd,
 		closer: sd,
