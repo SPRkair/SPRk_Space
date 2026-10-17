@@ -7,7 +7,8 @@
             "request": "launch",
             "mode": "auto",
             "program": "../SPRk_Space/cmd/main.go",
-            "cwd": "../SPRk_Space/"
+            "cwd": "../SPRk_Space/",
+            "console": "integratedTerminal"
         }
     ]
 }

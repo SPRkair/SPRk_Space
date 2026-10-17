@@ -21,6 +21,7 @@ type App struct {
 }
 
 func (a App) Init() (app *App, err error) {
+	a.ctx = context.Background()
 	err = utils.LoadEnvFile(".env")
 	if err != nil {
 		fmt.Print("error: app: Init: LoadFromEnv: ", err)
@@ -28,8 +29,8 @@ func (a App) Init() (app *App, err error) {
 	}
 	a.config, err = config.NewConfig()
 	if err != nil {
-		fmt.Print("Error: app: Init: Config: NewConfig: ", err)
-		fmt.Print("Info: Default config accepted ")
+		fmt.Println("Error: app: Init: Config: NewConfig: ", err)
+		fmt.Println("Info: Default config accepted ")
 	}
 	a.logger, err = logger.NewLogger(&a.config.Logger)
 	if err != nil {
