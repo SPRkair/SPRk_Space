@@ -52,7 +52,7 @@ func NewLogger(cfg *config.Logger) (Logger, error) {
 
 func (l *Log) writeFile(msg LogMessage) error {
 	if l.config.Write_file {
-		str := fmt.Sprintf("%s [%s] %s", msg.Date, msg.TypeMsg, msg.Message)
+		str := fmt.Sprintf("%s [%s] %s\n", msg.Date, msg.TypeMsg, msg.Message)
 		_, err := l.file.WriteString(str)
 		if err != nil {
 			return fmt.Errorf("writeFile: %w", err)

@@ -24,23 +24,20 @@ func (fs *FakeService) Run() {
 	}
 }
 
-func (fs *FakeService) ShowUsersList() {
+func (fs *FakeService) ShowUsersList() ([]entities.User, error) {
 	users, err := fs.Users.GetUsers(fs.ctx)
 	if err != nil {
-		fs.logger.Error("FakeService: ShowUsersList: %v", err)
+		return users, fmt.Errorf("FakeService: ShowUsersList: %v", err)
 	}
-	fmt.Println("\nUser list:")
-	for _, u := range users {
-		fmt.Printf("%d - %s\n", u.Id, u.Name)
-	}
+	return users, nil
 }
 
-func (fs *FakeService) GetUserById(id int64) {
+func (fs *FakeService) GetUserById(id int64) (entities.User, error) {
 	user, err := fs.Users.GetUser(fs.ctx, id)
 	if err != nil {
-		fs.logger.Error("FakeService: GetUserById: %d: %v", id, err)
+		return user, fmt.Errorf("FakeService: GetUserById: %d: %v", id, err)
 	}
-	fmt.Printf("\nUser %d: %s\n", id, user.Name)
+	return user, nil
 }
 
 func (fs *FakeService) test_get_from_cache_and_fake() error {

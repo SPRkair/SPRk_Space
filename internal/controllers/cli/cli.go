@@ -21,6 +21,8 @@ type Cli struct {
 	svc *services.Services
 
 	Menu *Menu
+	h    *handlers
+	con  *console
 }
 
 func NewCli(ctx context.Context, cfg *config.Cli, log logger.Logger, svc *services.Services) (*Cli, error) {
@@ -31,7 +33,9 @@ func NewCli(ctx context.Context, cfg *config.Cli, log logger.Logger, svc *servic
 		svc:    svc,
 		sc:     bufio.NewScanner(os.Stdin),
 	}
-	cli.Menu = cli.newMenu()
+	cli.con = newConsole(cli.sc)
+	cli.h = newHandlers(ctx, svc, cli.con, log)
+	cli.Menu = newMenu(cli.h)
 	return &cli, nil
 }
 
@@ -60,25 +64,4 @@ func (c *Cli) Run() error {
 
 func (c *Cli) Close() {
 	c.logger.Debug_info("Cli Close")
-}
-
-func (c *Cli) ReadLine(prompt string) (string, bool) {
-	fmt.Printf(prompt)
-	if !c.sc.Scan() {
-		return "", false
-	}
-	return strings.TrimSpace(c.sc.Text()), true
-}
-
-func (c *Cli) ReadInt64(prompt string) (int64, bool) {
-	s, ok := c.ReadLine(prompt)
-	if !ok {
-		return 0, false
-	}
-	n, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		fmt.Printf("\nInvalid number\n")
-		return 0, false
-	}
-	return n, true
 }

@@ -21,18 +21,13 @@ type item struct {
 	action  func()
 }
 
-func (c *Cli) newMenu() *Menu {
+func newMenu(h *handlers) *Menu {
 	fakeSerice := &screen{
 		name: "FakeService",
 		items: []item{
-			{caption: "Show users list", action: func() { c.svc.FakeService.ShowUsersList() }},
-			{caption: "Show users by id", action: func() {
-				id, ok := c.ReadInt64("Enter user ID: ")
-				if !ok {
-					return
-				}
-				c.svc.FakeService.GetUserById(id)
-			}},
+			{caption: "Show users list", action: func() { h.ShowUsersList() }},
+			{caption: "Show user by id", action: func() { h.GetUserById() }},
+			{caption: "Update user", action: func() { h.UpdateUser() }},
 		},
 	}
 	services := &screen{
