@@ -84,7 +84,7 @@ func (l *Log) Fatal(msg string, a ...interface{}) {
 		TypeMsg: Fatal,
 		Message: msg + " " + fmt.Sprintln(a...),
 	})
-	l.log.Fatalf("%s: %s", fmt.Sprint(a...))
+	l.log.Fatalf("Fatal: %s", fmt.Sprint(a...))
 }
 
 func (l *Log) Info(msg string, a ...interface{}) { l.printf(Info, msg, a...) }
@@ -104,5 +104,5 @@ func (l *Log) Close() {
 	if err != nil {
 		l.Error("Logger: Close: file.Close:  %v", err)
 	}
-	l.Info("log.Close")
+	l.Debug_info("log.Close")
 }

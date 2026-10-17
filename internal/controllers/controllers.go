@@ -4,6 +4,7 @@ import (
 	"SPRk_Space/internal/config"
 	"SPRk_Space/internal/controllers/cli"
 	"SPRk_Space/internal/logger"
+	"SPRk_Space/internal/services"
 	"context"
 	"errors"
 	"fmt"
@@ -19,18 +20,21 @@ type Controllers struct {
 	config *config.Controllers
 	logger logger.Logger
 
+	svc *services.Services
+
 	cli      Controller
 	telegram Controller
 	HTTP     Controller
 }
 
-func NewControllers(ctx context.Context, cfg *config.Controllers, log logger.Logger) (*Controllers, error) {
+func NewControllers(ctx context.Context, cfg *config.Controllers, log logger.Logger, svc *services.Services) (*Controllers, error) {
 	controllers := Controllers{
 		ctx:    ctx,
 		config: cfg,
 		logger: log,
+		svc:    svc,
 	}
-	cli, err := cli.NewCli(ctx, &cfg.Cli, log)
+	cli, err := cli.NewCli(ctx, &cfg.Cli, log, svc)
 	if err != nil {
 		return &Controllers{}, fmt.Errorf("controllers: newControllers: newCli: %w", err)
 	}

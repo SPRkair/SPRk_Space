@@ -1,6 +1,8 @@
 package cli
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Menu struct {
 	current *screen
@@ -19,11 +21,24 @@ type item struct {
 	action  func()
 }
 
-func newMenu() *Menu {
+func (c *Cli) newMenu() *Menu {
+	fakeSerice := &screen{
+		name: "FakeService",
+		items: []item{
+			{caption: "Show users list", action: func() { c.svc.FakeService.ShowUsersList() }},
+			{caption: "Show users by id", action: func() {
+				id, ok := c.ReadInt64("Enter user ID: ")
+				if !ok {
+					return
+				}
+				c.svc.FakeService.GetUserById(id)
+			}},
+		},
+	}
 	services := &screen{
 		name: "Services",
 		items: []item{
-			{caption: "FakeService", action: func() { /* ... */ }},
+			{caption: "FakeService", submenu: fakeSerice},
 			{caption: "UserService", action: func() { /* ... */ }},
 		},
 	}

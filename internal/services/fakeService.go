@@ -5,6 +5,7 @@ import (
 	"SPRk_Space/internal/logger"
 	"SPRk_Space/internal/storage"
 	"context"
+	"fmt"
 	"math/rand/v2"
 	"strconv"
 )
@@ -21,6 +22,25 @@ func (fs *FakeService) Run() {
 	if err != nil {
 		fs.logger.Error("FakeService: Run: ", err)
 	}
+}
+
+func (fs *FakeService) ShowUsersList() {
+	users, err := fs.Users.GetUsers(fs.ctx)
+	if err != nil {
+		fs.logger.Error("FakeService: ShowUsersList: %v", err)
+	}
+	fmt.Println("\nUser list:")
+	for _, u := range users {
+		fmt.Printf("%d - %s\n", u.Id, u.Name)
+	}
+}
+
+func (fs *FakeService) GetUserById(id int64) {
+	user, err := fs.Users.GetUser(fs.ctx, id)
+	if err != nil {
+		fs.logger.Error("FakeService: GetUserById: %d: %v", id, err)
+	}
+	fmt.Printf("\nUser %d: %s\n", id, user.Name)
 }
 
 func (fs *FakeService) test_get_from_cache_and_fake() error {

@@ -39,9 +39,9 @@ func NewServices(ctx context.Context, cfg *config.Services, log logger.Logger, s
 }
 
 func (s Services) Run() {
-	s.logger.Info("Services Run...")
+	s.logger.Debug_info("Services Run...")
 	s.FakeService.Run()
-	s.logger.Info("Services Run Complete.")
+	s.logger.Debug_info("Services Run Complete.")
 }
 
 func (s Services) Close() {

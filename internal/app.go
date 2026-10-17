@@ -34,20 +34,19 @@ func (a App) Init() (app *App, err error) {
 	}
 	a.logger, err = logger.NewLogger(&a.config.Logger)
 	if err != nil {
-		panic(fmt.Sprintf("error: app: Init: LoadFromEnv: %w", err))
+		panic(fmt.Sprintf("error: app: Init: LoadFromEnv: %v", err))
 	}
 	a.storage, err = storage.NewStorage(a.ctx, &a.config.Storage, a.logger)
 	if err != nil {
 		a.logger.Fatal(err.Error())
 	}
 	a.logger.Info("Storage init complete")
-
-	a.controllers, err = controllers.NewControllers(a.ctx, &a.config.Controllers, a.logger)
+	a.services = services.NewServices(a.ctx, &a.config.Services, a.logger, a.storage)
+	a.controllers, err = controllers.NewControllers(a.ctx, &a.config.Controllers, a.logger, a.services)
 	if err != nil {
 		a.logger.Fatal("Error: App: Init: NewControllers:  %w", err)
 	}
 
-	a.services = services.NewServices(a.ctx, &a.config.Services, a.logger, a.storage)
 	return &a, nil
 }
 
