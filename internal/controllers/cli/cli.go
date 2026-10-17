@@ -5,6 +5,7 @@ import (
 	"SPRk_Space/internal/logger"
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -28,17 +29,17 @@ func NewCli(ctx context.Context, cfg *config.Cli, log logger.Logger) (*Cli, erro
 	return &cli, nil
 }
 
-func (c Cli) Run() {
+func (c Cli) Run() error {
 	sc := bufio.NewScanner(os.Stdin)
 	for !c.Menu.exit {
 		select {
 		case <-c.ctx.Done():
-			return
+			return c.ctx.Err()
 		default:
 		}
 		c.Menu.show()
 		if !sc.Scan() {
-			return
+			break
 		}
 		n, err := strconv.Atoi(strings.TrimSpace(sc.Text()))
 		if err != nil {
@@ -46,6 +47,10 @@ func (c Cli) Run() {
 		}
 		c.Menu.Select(n)
 	}
+	if err := sc.Err(); err != nil {
+		return fmt.Errorf("Cli: read input: %w", err)
+	}
+	return nil
 }
 
 func (c Cli) Close() {

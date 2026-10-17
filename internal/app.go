@@ -2,6 +2,7 @@ package app
 
 import (
 	"SPRk_Space/internal/config"
+	"SPRk_Space/internal/controllers"
 	"SPRk_Space/internal/logger"
 	"SPRk_Space/internal/services"
 	"SPRk_Space/internal/storage"
@@ -11,11 +12,12 @@ import (
 )
 
 type App struct {
-	ctx      context.Context
-	logger   logger.Logger
-	config   *config.Config
-	storage  *storage.Storage
-	services *services.Services
+	ctx         context.Context
+	logger      logger.Logger
+	config      *config.Config
+	storage     *storage.Storage
+	services    *services.Services
+	controllers *controllers.Controllers
 }
 
 func (a App) Init() (app *App, err error) {
@@ -38,12 +40,20 @@ func (a App) Init() (app *App, err error) {
 		a.logger.Fatal(err.Error())
 	}
 	a.logger.Info("Storage init complete")
+
+	a.controllers, err = controllers.NewControllers(a.ctx, &a.config.Controllers, a.logger)
+	if err != nil {
+		a.logger.Fatal("Error: App: Init: NewControllers:  %w", err)
+	}
+
 	a.services = services.NewServices(a.ctx, &a.config.Services, a.logger, a.storage)
 	return &a, nil
 }
 
 func (a App) Run() error {
-	a.services.Run()
+	a.controllers.Run()
+
+	//a.services.Run()
 	return nil
 }
 

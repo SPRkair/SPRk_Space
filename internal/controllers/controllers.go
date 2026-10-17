@@ -5,22 +5,26 @@ import (
 	"SPRk_Space/internal/controllers/cli"
 	"SPRk_Space/internal/logger"
 	"context"
+	"errors"
 	"fmt"
 )
 
 type Controller interface {
-	Run()
+	Run() error
 	Close()
 }
 
 type Controllers struct {
-	ctx        context.Context
-	config     *config.Controllers
-	logger     logger.Logger
-	controller []Controller
+	ctx    context.Context
+	config *config.Controllers
+	logger logger.Logger
+
+	cli      Controller
+	telegram Controller
+	HTTP     Controller
 }
 
-func newControllers(ctx context.Context, cfg *config.Controllers, log logger.Logger) (Controllers, error) {
+func NewControllers(ctx context.Context, cfg *config.Controllers, log logger.Logger) (*Controllers, error) {
 	controllers := Controllers{
 		ctx:    ctx,
 		config: cfg,
@@ -28,7 +32,7 @@ func newControllers(ctx context.Context, cfg *config.Controllers, log logger.Log
 	}
 	cli, err := cli.NewCli(ctx, &cfg.Cli, log)
 	if err != nil {
-		return Controllers{}, fmt.Errorf("controllers: newControllers: newCli: %w", err)
+		return &Controllers{}, fmt.Errorf("controllers: newControllers: newCli: %w", err)
 	}
 	/*
 		http, err := cli.NewHttp(ctx, &cfg.HTTP, log)
@@ -42,6 +46,14 @@ func newControllers(ctx context.Context, cfg *config.Controllers, log logger.Log
 		controllers.controller = append(controllers.controller, http)
 		controllers.controller = append(controllers.controller, telegram)
 	*/
-	controllers.controller = append(controllers.controller, cli)
-	return controllers, nil
+	controllers.cli = cli
+	return &controllers, nil
+}
+
+func (c Controllers) Run() error {
+	err := c.cli.Run()
+	if err != nil && !errors.Is(err, context.Canceled) {
+		return fmt.Errorf("Controllers: Run: Cli: %w", err)
+	}
+	return nil
 }
