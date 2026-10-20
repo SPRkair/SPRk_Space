@@ -2,6 +2,12 @@ package entities
 
 import "time"
 
+type UserStatus string
+
+const (
+	Registered UserStatus = "Registered"
+)
+
 type User struct {
 	Id           int64  `cli:"ID,ro"`
 	Name         string `cli:"Name"`
