@@ -46,6 +46,18 @@ func (db *DB) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
+func (db *DB) FindUserByAuthKey(key string) (int64, error) {
+	return 0, nil
+}
+
+func (db *DB) SaveSession(ctx context.Context, session entities.Session) error {
+	return nil
+}
+
+func (db *DB) Verify(ctx context.Context, token string) (int64, error) {
+	return 0, nil
+}
+
 func (db *DB) GetTask(ctx context.Context, id int64) (entities.Task, error) {
 	return entities.Task{}, nil
 }

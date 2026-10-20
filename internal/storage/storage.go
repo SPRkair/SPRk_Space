@@ -10,17 +10,22 @@ import (
 )
 
 var (
-	ErrUserNotFound  = errors.New("user not found")
-	ErrUsersNotFound = errors.New("users not found")
+	ErrUserNotFound   = errors.New("user not found")
+	ErrUsersNotFound  = errors.New("users not found")
+	ErrLoginNotFound  = errors.New("Login not found")
+	ErrTokenNotFound  = errors.New("Token not found")
+	ErrTokenCollision = errors.New("Token collision")
 )
 
 type Storage struct {
-	ctx    context.Context
-	config *config.Storage
-	logger logger.Logger
-	User   UserStorageDriver
-	Task   TaskStorageDriver
-	closer io.Closer
+	ctx     context.Context
+	config  *config.Storage
+	logger  logger.Logger
+	User    UserStorageDriver
+	Task    TaskStorageDriver
+	Login   LoginStorageDriver
+	Session SessionStorageDriver
+	closer  io.Closer
 }
 
 func NewStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*Storage, error) {
@@ -61,12 +66,14 @@ func NewStorage(ctx context.Context, cfg *config.Storage, log logger.Logger) (*S
 		return nil, fmt.Errorf("storage: NewStorage: new %s driver: %w", cfg.StorageDriver, err)
 	}
 	storage := Storage{
-		ctx:    ctx,
-		config: cfg,
-		logger: log,
-		User:   sd,
-		Task:   sd,
-		closer: sd,
+		ctx:     ctx,
+		config:  cfg,
+		logger:  log,
+		User:    sd,
+		Task:    sd,
+		Login:   sd,
+		closer:  sd,
+		Session: sd,
 	}
 	return &storage, nil
 }

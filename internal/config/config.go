@@ -52,7 +52,15 @@ type App struct {
 }
 
 type Services struct {
-	Executor Executor `json:"executor" yaml:"executor" ini:"executor"`
+	FakeService FakeService `json:"fakesrvice" yaml:"fakesrvice" ini:"fakesrvice"`
+	Auth        Auth        `json:"auth" yaml:"auth" ini:"auth"`
+	Executor    Executor    `json:"executor" yaml:"executor" ini:"executor"`
+}
+
+type FakeService struct {
+}
+
+type Auth struct {
 }
 
 type Controllers struct {
@@ -137,6 +145,8 @@ func getDefaultConfig() Config {
 				TaskWaitDuration:      100,
 				LogSaverWaitDuration:  100,
 			},
+			FakeService: FakeService{},
+			Auth:        Auth{},
 		},
 		Controllers: Controllers{
 			HTTP: HTTP{

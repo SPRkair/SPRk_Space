@@ -6,6 +6,8 @@ import (
 	"SPRk_Space/internal/logger"
 	"SPRk_Space/internal/utils"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"sync"
 )
@@ -120,6 +122,59 @@ func (fs *FakeStorage) DeleteUser(ctx context.Context, id int64) error {
 		return fmt.Errorf("storage: FakeStorage: DeleteUser: SaveTo: %d, %w", id, err)
 	}
 	return nil
+}
+
+func (fs *FakeStorage) FindUserByAuthKey(key string) (int64, error) {
+	logins := []entities.Login{}
+	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"logins.json", &logins)
+	if err != nil {
+		return 0, fmt.Errorf("FakeStorage: FindUserByAuthKey: LoadFrom: %w", err)
+	}
+	for _, login := range logins {
+		if login.Hash == key {
+			return login.UserID, nil
+		}
+	}
+	return 0, ErrLoginNotFound
+}
+
+func (fs *FakeStorage) SaveSession(ctx context.Context, session entities.Session) error {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
+	var sessions []entities.Session
+	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"sessions.json", &sessions)
+	if err != nil {
+		return fmt.Errorf("storage: FakeStorage: SaveSession: LoadFrom: %d: %w", session.UserId, err)
+	}
+	for _, s := range sessions {
+		if s.Token == session.Token {
+			return ErrTokenCollision
+		}
+	}
+
+	sessions = append(sessions, session)
+
+	err = utils.SaveTo(fs.config.DirectoryFakeStorage+"sessions.json", sessions)
+	if err != nil {
+		return fmt.Errorf("storage: FakeStorage: SaveSession: SaveTo: %d: %w", session.UserId, err)
+	}
+	return nil
+}
+
+func (fs *FakeStorage) Verify(ctx context.Context, token string) (int64, error) {
+	sessions := []entities.Session{}
+	sum := sha256.Sum256([]byte(token))
+	tokenHash := hex.EncodeToString(sum[:])
+	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"sessions.json", &sessions)
+	if err != nil {
+		return 0, fmt.Errorf("FakeStorage: Verify: %w", err)
+	}
+	for _, session := range sessions {
+		if session.Token == tokenHash {
+			return session.UserId, nil
+		}
+	}
+	return 0, ErrTokenNotFound
 }
 
 func (fs *FakeStorage) Test(_ string) error {

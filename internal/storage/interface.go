@@ -9,6 +9,8 @@ import (
 type StorageDriver interface {
 	UserStorageDriver
 	TaskStorageDriver
+	LoginStorageDriver
+	SessionStorageDriver
 	io.Closer
 }
 
@@ -22,7 +24,16 @@ type UserStorageDriver interface {
 	Test(string) error
 }
 
+type LoginStorageDriver interface {
+	FindUserByAuthKey(string) (int64, error)
+}
+
 type TaskStorageDriver interface {
 	GetTask(context.Context, int64) (entities.Task, error)
 	SaveTask(context.Context, entities.Task) error
+}
+
+type SessionStorageDriver interface {
+	Verify(context.Context, string) (int64, error)
+	SaveSession(context.Context, entities.Session) error
 }

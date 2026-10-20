@@ -45,7 +45,7 @@ func (hs *HybridStorage) GetUser(ctx context.Context, id int64) (entities.User, 
 		}
 		err := hs.cache.SaveUser(ctx, user)
 		if err != nil {
-			hs.logger.Error("storage: HybridStorage: GetUser: %q, %w", id, err)
+			hs.logger.Error("storage: HybridStorage: GetUser: %d, %v", id, err)
 		}
 		return user, nil
 	}
@@ -89,7 +89,7 @@ func (hs *HybridStorage) UpdateUser(ctx context.Context, user entities.User) err
 		return fmt.Errorf("storage: HybridStorage: additionalStorage.UpdateUser: %w", err)
 	}
 	if err := hs.cache.DeleteUser(ctx, user.Id); err != nil {
-		hs.logger.Error("cache delete failed: id: %q, %v", user.Id, err)
+		hs.logger.Error("cache delete failed: id: %d, %v", user.Id, err)
 	}
 	return nil
 }
@@ -99,7 +99,7 @@ func (hs *HybridStorage) DeleteUser(ctx context.Context, id int64) error {
 		return fmt.Errorf("storage: HybridStorage: additionalStorage.DeleteUser: %w", err)
 	}
 	if err := hs.cache.DeleteUser(ctx, id); err != nil {
-		hs.logger.Error("cache delete failed", "id", id, "err", err)
+		hs.logger.Error("cache delete failed: %d: %v", id, err)
 	}
 	return nil
 }
@@ -118,6 +118,54 @@ func (hs *HybridStorage) GetTask(ctx context.Context, id int64) (entities.Task, 
 
 func (hs *HybridStorage) SaveTask(ctx context.Context, task entities.Task) error {
 	return nil
+}
+
+func (hs *HybridStorage) FindUserByAuthKey(key string) (int64, error) {
+	userId, err := hs.cache.FindUserByAuthKey(key)
+	if err == nil {
+		return userId, nil
+	}
+	if !errors.Is(err, ErrUserNotFound) {
+		return 0, err
+	}
+	if errors.Is(err, ErrUserNotFound) {
+		userId, err = hs.additionalStorage.FindUserByAuthKey(key)
+		if err != nil {
+			return 0, err
+		}
+		return userId, nil
+	}
+	return userId, nil
+}
+
+func (hs *HybridStorage) SaveSession(ctx context.Context, session entities.Session) error {
+	err := hs.additionalStorage.SaveSession(ctx, session)
+	if err != nil {
+		return fmt.Errorf("storage: HybridStorage: additionalStorage.SaveSession: %w", err)
+	}
+	err = hs.cache.SaveSession(ctx, session)
+	if err != nil {
+		hs.logger.Error("storage: HybridStorage: cache.SaveSession: %v", err)
+	}
+	return nil
+}
+
+func (hs *HybridStorage) Verify(ctx context.Context, token string) (int64, error) {
+	userId, err := hs.cache.Verify(ctx, token)
+	if err == nil {
+		return userId, nil
+	}
+	if !errors.Is(err, ErrTokenNotFound) {
+		return 0, err
+	}
+	if errors.Is(err, ErrTokenNotFound) {
+		userId, err = hs.additionalStorage.Verify(ctx, token)
+		if err != nil {
+			return 0, err
+		}
+		return userId, nil
+	}
+	return userId, nil
 }
 
 func (hs *HybridStorage) Close() error {
