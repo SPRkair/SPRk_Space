@@ -32,6 +32,8 @@ func newFakeStorage(ctx context.Context, cfg *config.FakeStorage, log logger.Log
 }
 
 func (fs *FakeStorage) GetUser(ctx context.Context, id int64) (entities.User, error) {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
 	users := []entities.User{}
 	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"users.json", &users)
 	if err != nil {
@@ -46,6 +48,8 @@ func (fs *FakeStorage) GetUser(ctx context.Context, id int64) (entities.User, er
 }
 
 func (fs *FakeStorage) GetUsers(ctx context.Context) ([]entities.User, error) {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
 	users := []entities.User{}
 	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"users.json", &users)
 	if err != nil {
@@ -55,6 +59,8 @@ func (fs *FakeStorage) GetUsers(ctx context.Context) ([]entities.User, error) {
 }
 
 func (fs *FakeStorage) SaveUser(ctx context.Context, user entities.User) error {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
 	err := utils.SaveTo(fs.config.DirectoryFakeStorage+"users.json", user)
 	if err != nil {
 		return fmt.Errorf("FakeStorage: SaveUser: %w", err)
@@ -63,6 +69,8 @@ func (fs *FakeStorage) SaveUser(ctx context.Context, user entities.User) error {
 }
 
 func (fs *FakeStorage) SaveUsers(ctx context.Context, users []entities.User) error {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
 	err := utils.SaveTo(fs.config.DirectoryFakeStorage+"users.json", users)
 	if err != nil {
 		return fmt.Errorf("FakeStorage: SaveUser: %w", err)
@@ -125,6 +133,8 @@ func (fs *FakeStorage) DeleteUser(ctx context.Context, id int64) error {
 }
 
 func (fs *FakeStorage) FindUserByAuthKey(key string) (int64, error) {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
 	logins := []entities.Login{}
 	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"logins.json", &logins)
 	if err != nil {
@@ -136,6 +146,33 @@ func (fs *FakeStorage) FindUserByAuthKey(key string) (int64, error) {
 		}
 	}
 	return 0, ErrLoginNotFound
+}
+
+func (fs *FakeStorage) RegNewLogin(key string) (int64, error) {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
+	logins := []entities.Login{}
+	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"logins.json", &logins)
+	if err != nil {
+		return 0, fmt.Errorf("FakeStorage: RegNewLogin: LoadFrom: %w", err)
+	}
+	var maxID int64
+	for _, login := range logins {
+		if login.Hash == key {
+			err = ErrLoginAlreadyExist
+		}
+		if login.UserID > maxID {
+			maxID = login.UserID
+		}
+	}
+	if err != nil {
+		return 0, err
+	}
+	logins = append(logins, entities.Login{
+		Hash:   key,
+		UserID: maxID + 1,
+	})
+	return maxID, nil
 }
 
 func (fs *FakeStorage) SaveSession(ctx context.Context, session entities.Session) error {
@@ -162,6 +199,8 @@ func (fs *FakeStorage) SaveSession(ctx context.Context, session entities.Session
 }
 
 func (fs *FakeStorage) Verify(ctx context.Context, token string) (int64, error) {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
 	sessions := []entities.Session{}
 	sum := sha256.Sum256([]byte(token))
 	tokenHash := hex.EncodeToString(sum[:])

@@ -61,6 +61,11 @@ type FakeService struct {
 }
 
 type Auth struct {
+	MinLoginRunes    int `json:"minloginrunes" yaml:"minloginrunes" ini:"minloginrunes"`
+	MaxLoginRunes    int `json:"maxloginrunes" yaml:"maxloginrunes" ini:"maxloginrunes"`
+	MinUserNameRunes int `json:"minusernamerunes" yaml:"minusernamerunes" ini:"minusernamerunes"`
+	MaxUserNameRunes int `json:"maxusernamerunes" yaml:"maxusernamerunes" ini:"maxusernamerunes"`
+	MinPassLen       int `json:"minpasslen" yaml:"minpasslen" ini:"minpasslen"`
 }
 
 type Controllers struct {
@@ -146,7 +151,11 @@ func getDefaultConfig() Config {
 				LogSaverWaitDuration:  100,
 			},
 			FakeService: FakeService{},
-			Auth:        Auth{},
+			Auth: Auth{
+				MinLoginRunes: 3,
+				MaxLoginRunes: 64,
+				MinPassLen:    32,
+			},
 		},
 		Controllers: Controllers{
 			HTTP: HTTP{

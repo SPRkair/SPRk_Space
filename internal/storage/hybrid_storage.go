@@ -133,9 +133,19 @@ func (hs *HybridStorage) FindUserByAuthKey(key string) (int64, error) {
 		if err != nil {
 			return 0, err
 		}
+		hs.cache.loginCache.logins[key] = userId
 		return userId, nil
 	}
 	return userId, nil
+}
+
+func (hs *HybridStorage) RegNewLogin(key string) (int64, error) {
+	userId, err := hs.additionalStorage.RegNewLogin(key)
+	if err != nil {
+		return 0, err
+	}
+	hs.cache.loginCache.logins[key] = userId
+	return 0, nil
 }
 
 func (hs *HybridStorage) SaveSession(ctx context.Context, session entities.Session) error {

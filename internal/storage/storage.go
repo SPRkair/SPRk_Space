@@ -10,11 +10,13 @@ import (
 )
 
 var (
-	ErrUserNotFound   = errors.New("user not found")
-	ErrUsersNotFound  = errors.New("users not found")
-	ErrLoginNotFound  = errors.New("Login not found")
-	ErrTokenNotFound  = errors.New("Token not found")
-	ErrTokenCollision = errors.New("Token collision")
+	ErrUserNotFound      = errors.New("user not found")
+	ErrUsersNotFound     = errors.New("users not found")
+	ErrLoginNotFound     = errors.New("Login not found")
+	ErrLoginAlreadyExist = errors.New("Login already exist")
+	ErrTokenNotFound     = errors.New("Token not found")
+	ErrTokenCollision    = errors.New("Token collision")
+	ErrInvalidInput      = errors.New("Invalid Input")
 )
 
 type Storage struct {

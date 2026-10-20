@@ -122,7 +122,27 @@ func (c *Cache) FindUserByAuthKey(key string) (int64, error) {
 	return userId, nil
 }
 
+func (c *Cache) RegNewLogin(key string) (int64, error) {
+	c.loginCache.mu.Lock()
+	defer c.loginCache.mu.Unlock()
+	userId, ok := c.loginCache.logins[key]
+	if ok {
+		return 0, ErrLoginAlreadyExist
+	}
+	var maxID int64
+	for _, id := range c.loginCache.logins {
+		if id > maxID {
+			maxID = id
+		}
+	}
+	userId = maxID + 1
+	c.loginCache.logins[key] = userId
+	return userId, nil
+}
+
 func (c *Cache) SaveSession(ctx context.Context, session entities.Session) error {
+	c.sessionsCache.mu.Lock()
+	defer c.sessionsCache.mu.Unlock()
 	c.sessionsCache.sessions[session.Token] = &session
 	return nil
 }

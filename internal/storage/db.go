@@ -50,6 +50,10 @@ func (db *DB) FindUserByAuthKey(key string) (int64, error) {
 	return 0, nil
 }
 
+func (db *DB) RegNewLogin(key string) (int64, error) {
+	return 0, nil
+}
+
 func (db *DB) SaveSession(ctx context.Context, session entities.Session) error {
 	return nil
 }

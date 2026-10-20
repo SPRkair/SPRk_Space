@@ -25,6 +25,7 @@ type UserStorageDriver interface {
 }
 
 type LoginStorageDriver interface {
+	RegNewLogin(string) (int64, error)
 	FindUserByAuthKey(string) (int64, error)
 }
 

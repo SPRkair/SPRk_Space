@@ -11,11 +11,17 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"golang.org/x/crypto/argon2"
+)
+
+var (
+	ErrInvalidInput = errors.New("Invalid Input")
 )
 
 type Auth struct {
@@ -35,6 +41,50 @@ func newAuth(ctx context.Context, cfg *config.Auth, log logger.Logger, st *stora
 		st:     st,
 		pepper: nil,
 	}, nil
+}
+
+func (a *Auth) RegstrationNewUser(ctx context.Context, ri entities.RegistrationInput) (string, error) {
+	err := a.validateRegInput(ri)
+	if err != nil {
+		return "", ErrInvalidInput
+	}
+
+	key := deriveAuthKey(ri.Login, ri.Pass, a.pepper)
+
+	userId, err := a.st.Login.RegNewLogin(key)
+	if err != nil {
+		return "", err
+	}
+
+	user := entities.User{
+		Id:           userId,
+		Name:         ri.UserName,
+		Email:        ri.Email,
+		Status:       "New",
+		Registration: time.Now(),
+	}
+
+	err = a.st.User.SaveUser(a.ctx, user)
+	if err != nil {
+		return "", err
+	}
+
+	token, tokenHash, err := newToken()
+	if err != nil {
+		return "", err
+	}
+	session := entities.Session{
+		Token:       tokenHash,
+		UserId:      userId,
+		CreateTime:  time.Now(),
+		TTL:         0,
+		Fingerprint: entities.Fingerprint{},
+	}
+	err = a.st.Session.SaveSession(a.ctx, session)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 func (a *Auth) Login(ctx context.Context, login string, pass string) (string, error) {
@@ -85,4 +135,28 @@ func newToken() (token string, tokenHash string, err error) {
 	sum := sha256.Sum256([]byte(token))
 	tokenHash = hex.EncodeToString(sum[:])
 	return token, tokenHash, nil
+}
+
+func (a *Auth) validateRegInput(ri entities.RegistrationInput) error {
+	login := strings.TrimSpace(ri.Login)
+	lc := utf8.RuneCountInString(login)
+	if lc < a.config.MinLoginRunes || lc > a.config.MaxLoginRunes {
+		return ErrInvalidInput
+	}
+	if !utf8.ValidString(login) {
+		return ErrInvalidInput
+	}
+
+	unc := utf8.RuneCountInString(ri.UserName)
+	if unc < a.config.MinUserNameRunes || unc > a.config.MaxUserNameRunes {
+		return ErrInvalidInput
+	}
+	if !utf8.ValidString(ri.UserName) {
+		return ErrInvalidInput
+	}
+
+	if utf8.RuneCountInString(ri.Pass) < a.config.MinPassLen {
+		return ErrInvalidInput
+	}
+	return nil
 }
