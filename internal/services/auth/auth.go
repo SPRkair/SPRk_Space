@@ -60,7 +60,7 @@ func (a *Auth) RegstrationNewUser(ctx context.Context, ri entities.RegistrationI
 		Id:           userId,
 		Name:         ri.UserName,
 		Email:        ri.Email,
-		Status:       "New",
+		Status:       entities.Registered,
 		Registration: time.Now(),
 	}
 

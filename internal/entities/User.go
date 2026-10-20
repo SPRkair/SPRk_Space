@@ -12,7 +12,7 @@ type User struct {
 	Id           int64  `cli:"ID,ro"`
 	Name         string `cli:"Name"`
 	Email        string
-	Status       string
+	Status       UserStatus
 	Secret_field string `cli:"-"`
 	Registration time.Time
 	Permissions  []Permissions
