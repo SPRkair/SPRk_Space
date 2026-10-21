@@ -21,7 +21,7 @@ func NewServices(ctx context.Context, cfg *config.Services, log logger.Logger, s
 	services := Services{
 		config:      cfg,
 		logger:      log,
-		FakeService: NewFakeService(ctx, &cfg.FakeService, log, storage.User),
+		FakeService: NewFakeService(ctx, &cfg.FakeService, log, storage),
 		Auth:        auth.NewAuth(ctx, &cfg.Auth, log, storage),
 	}
 	return &services

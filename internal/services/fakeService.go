@@ -17,11 +17,11 @@ type FakeService struct {
 	Users  storage.UserStorageDriver
 }
 
-func NewFakeService(ctx context.Context, cfg *config.FakeService, log logger.Logger, st storage.UserStorageDriver) *FakeService {
+func NewFakeService(ctx context.Context, cfg *config.FakeService, log logger.Logger, st *storage.Storage) *FakeService {
 	return &FakeService{
 		ctx:    ctx,
 		logger: log,
-		Users:  st,
+		Users:  st.User,
 	}
 }
 
