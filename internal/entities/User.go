@@ -15,7 +15,7 @@ type User struct {
 	Status       UserStatus
 	Secret_field string `cli:"-"`
 	Registration time.Time
-	Permissions  []Permissions
+	Permissions  map[string]Permissions
 }
 
 type Permissions struct {

@@ -2,6 +2,11 @@ package entities
 
 import "time"
 
+type Login struct {
+	UserID int64
+	Hash   string
+}
+
 type Session struct {
 	Token       string
 	UserId      int64
