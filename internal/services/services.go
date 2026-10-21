@@ -27,13 +27,13 @@ func NewServices(ctx context.Context, cfg *config.Services, log logger.Logger, s
 	return &services
 }
 
-func (s Services) Run() {
+func (s *Services) Run() {
 	s.logger.Debug_info("Services Run...")
 	s.FakeService.Run()
 	s.logger.Debug_info("Services Run Complete.")
 }
 
-func (s Services) Close() {
+func (s *Services) Close() {
 	s.logger.Debug_info("Services Close")
 	s.Auth.Close()
 	s.FakeService.Close()
