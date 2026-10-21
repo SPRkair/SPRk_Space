@@ -131,6 +131,10 @@ func (a *Auth) Login(ctx context.Context, li entities.LoginInput) (string, error
 	return token, nil
 }
 
+func (a *Auth) Verify(ctx context.Context, token string) (int64, error) {
+	return a.session.Verify(ctx, token)
+}
+
 func (a *Auth) validateRegInput(ri entities.RegistrationInput) error {
 	login := strings.TrimSpace(ri.Login)
 	lc := utf8.RuneCountInString(login)
