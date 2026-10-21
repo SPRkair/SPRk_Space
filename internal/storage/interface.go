@@ -14,6 +14,15 @@ type StorageDriver interface {
 	io.Closer
 }
 
+type CacheDriver interface {
+	UserStorageDriver
+	TaskStorageDriver
+	LoginStorageDriver
+	SessionStorageDriver
+	io.Closer
+	SaveLogin(entities.Login) error
+}
+
 type UserStorageDriver interface {
 	GetUser(context.Context, int64) (entities.User, error)
 	GetUsers(context.Context) ([]entities.User, error)

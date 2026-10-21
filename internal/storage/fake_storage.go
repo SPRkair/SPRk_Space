@@ -172,6 +172,12 @@ func (fs *FakeStorage) RegNewLogin(key string) (int64, error) {
 		Hash:   key,
 		UserID: maxID + 1,
 	})
+
+	err = utils.SaveTo(fs.config.DirectoryFakeStorage+"logins.json", logins)
+	if err != nil {
+		return 0, fmt.Errorf("FakeStorage: RegNewLogin: SaveTo: %w", err)
+	}
+
 	return maxID, nil
 }
 

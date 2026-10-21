@@ -140,6 +140,11 @@ func (c *Cache) RegNewLogin(key string) (int64, error) {
 	return userId, nil
 }
 
+func (c *Cache) SaveLogin(savedLogin entities.Login) error {
+	c.loginCache.logins[savedLogin.Hash] = savedLogin.UserID
+	return nil
+}
+
 func (c *Cache) SaveSession(ctx context.Context, session entities.Session) error {
 	c.sessionsCache.mu.Lock()
 	defer c.sessionsCache.mu.Unlock()

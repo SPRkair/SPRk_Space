@@ -14,11 +14,11 @@ type HybridStorage struct {
 	config *config.HybridStorage
 	logger logger.Logger
 
-	cache             *Cache
+	cache             CacheDriver
 	additionalStorage StorageDriver
 }
 
-func newHybridStorage(ctx context.Context, cfg *config.HybridStorage, log logger.Logger, cache *Cache, additionalStorageDriver StorageDriver) (*HybridStorage, error) {
+func newHybridStorage(ctx context.Context, cfg *config.HybridStorage, log logger.Logger, cache CacheDriver, additionalStorageDriver StorageDriver) (*HybridStorage, error) {
 	hybridStorage := HybridStorage{
 		ctx:    ctx,
 		config: cfg,
@@ -105,10 +105,7 @@ func (hs *HybridStorage) DeleteUser(ctx context.Context, id int64) error {
 }
 
 func (hs *HybridStorage) Test(prefix string) error {
-	hs.logger.Debug_value("Cache Test-%s", prefix)
-	for i, u := range hs.cache.userCache.users {
-		hs.logger.Debug_value("Cache Test-%s: value: %d : %v", prefix, i, *u)
-	}
+
 	return nil
 }
 
@@ -133,7 +130,10 @@ func (hs *HybridStorage) FindUserByAuthKey(key string) (int64, error) {
 		if err != nil {
 			return 0, err
 		}
-		hs.cache.loginCache.logins[key] = userId
+		err = hs.cache.SaveLogin(entities.Login{UserID: userId, Hash: key})
+		if err != nil {
+			return 0, err
+		}
 		return userId, nil
 	}
 	return userId, nil
@@ -144,8 +144,16 @@ func (hs *HybridStorage) RegNewLogin(key string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	hs.cache.loginCache.logins[key] = userId
+	err = hs.cache.SaveLogin(entities.Login{UserID: userId, Hash: key})
+	if err != nil {
+		return 0, err
+	}
 	return 0, nil
+}
+
+func (hs *HybridStorage) SaveLogin(login entities.Login) error {
+
+	return nil
 }
 
 func (hs *HybridStorage) SaveSession(ctx context.Context, session entities.Session) error {
