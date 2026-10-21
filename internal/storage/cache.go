@@ -4,9 +4,8 @@ import (
 	"SPRk_Space/internal/config"
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
+	"SPRk_Space/internal/utils"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"sync"
 )
 
@@ -112,7 +111,7 @@ func (c *Cache) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (c *Cache) FindUserByAuthKey(key string) (int64, error) {
+func (c *Cache) Login(key string) (int64, error) {
 	c.loginCache.mu.Lock()
 	defer c.loginCache.mu.Unlock()
 	userId, ok := c.loginCache.logins[key]
@@ -152,12 +151,10 @@ func (c *Cache) SaveSession(ctx context.Context, session entities.Session) error
 	return nil
 }
 
-func (c *Cache) Verify(ctx context.Context, token string) (int64, error) {
+func (c *Cache) ValidateSession(ctx context.Context, token string) (int64, error) {
 	c.sessionsCache.mu.Lock()
 	defer c.sessionsCache.mu.Unlock()
-	sum := sha256.Sum256([]byte(token))
-	tokenHash := hex.EncodeToString(sum[:])
-	session, ok := c.sessionsCache.sessions[tokenHash]
+	session, ok := c.sessionsCache.sessions[utils.Hash(utils.Sha256, token)]
 	if !ok {
 		return 0, ErrTokenNotFound
 	}

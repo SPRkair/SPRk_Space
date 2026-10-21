@@ -6,8 +6,6 @@ import (
 	"SPRk_Space/internal/logger"
 	"SPRk_Space/internal/utils"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"sync"
 )
@@ -132,13 +130,13 @@ func (fs *FakeStorage) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (fs *FakeStorage) FindUserByAuthKey(key string) (int64, error) {
+func (fs *FakeStorage) Login(key string) (int64, error) {
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
 	logins := []entities.Login{}
 	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"logins.json", &logins)
 	if err != nil {
-		return 0, fmt.Errorf("FakeStorage: FindUserByAuthKey: LoadFrom: %w", err)
+		return 0, fmt.Errorf("FakeStorage: Login: LoadFrom: %w", err)
 	}
 	for _, login := range logins {
 		if login.Hash == key {
@@ -204,15 +202,14 @@ func (fs *FakeStorage) SaveSession(ctx context.Context, session entities.Session
 	return nil
 }
 
-func (fs *FakeStorage) Verify(ctx context.Context, token string) (int64, error) {
+func (fs *FakeStorage) ValidateSession(ctx context.Context, token string) (int64, error) {
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
 	sessions := []entities.Session{}
-	sum := sha256.Sum256([]byte(token))
-	tokenHash := hex.EncodeToString(sum[:])
+	tokenHash := utils.Hash(utils.Sha256, token)
 	err := utils.LoadFrom(fs.config.DirectoryFakeStorage+"sessions.json", &sessions)
 	if err != nil {
-		return 0, fmt.Errorf("FakeStorage: Verify: %w", err)
+		return 0, fmt.Errorf("FakeStorage: ValidateSession: %w", err)
 	}
 	for _, session := range sessions {
 		if session.Token == tokenHash {

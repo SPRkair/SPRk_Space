@@ -14,3 +14,8 @@ type LoginInput struct {
 	Login string
 	Pass  string
 }
+
+type ValidateSessionInput struct {
+	Token       string
+	Fingerprint Fingerprint
+}

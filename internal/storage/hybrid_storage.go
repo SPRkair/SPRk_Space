@@ -117,8 +117,8 @@ func (hs *HybridStorage) SaveTask(ctx context.Context, task entities.Task) error
 	return nil
 }
 
-func (hs *HybridStorage) FindUserByAuthKey(key string) (int64, error) {
-	userId, err := hs.cache.FindUserByAuthKey(key)
+func (hs *HybridStorage) Login(key string) (int64, error) {
+	userId, err := hs.cache.Login(key)
 	if err == nil {
 		return userId, nil
 	}
@@ -126,7 +126,7 @@ func (hs *HybridStorage) FindUserByAuthKey(key string) (int64, error) {
 		return 0, err
 	}
 	if errors.Is(err, ErrUserNotFound) {
-		userId, err = hs.additionalStorage.FindUserByAuthKey(key)
+		userId, err = hs.additionalStorage.Login(key)
 		if err != nil {
 			return 0, err
 		}
@@ -151,11 +151,6 @@ func (hs *HybridStorage) RegNewLogin(key string) (int64, error) {
 	return 0, nil
 }
 
-func (hs *HybridStorage) SaveLogin(login entities.Login) error {
-
-	return nil
-}
-
 func (hs *HybridStorage) SaveSession(ctx context.Context, session entities.Session) error {
 	err := hs.additionalStorage.SaveSession(ctx, session)
 	if err != nil {
@@ -168,8 +163,8 @@ func (hs *HybridStorage) SaveSession(ctx context.Context, session entities.Sessi
 	return nil
 }
 
-func (hs *HybridStorage) Verify(ctx context.Context, token string) (int64, error) {
-	userId, err := hs.cache.Verify(ctx, token)
+func (hs *HybridStorage) ValidateSession(ctx context.Context, token string) (int64, error) {
+	userId, err := hs.cache.ValidateSession(ctx, token)
 	if err == nil {
 		return userId, nil
 	}
@@ -177,7 +172,7 @@ func (hs *HybridStorage) Verify(ctx context.Context, token string) (int64, error
 		return 0, err
 	}
 	if errors.Is(err, ErrTokenNotFound) {
-		userId, err = hs.additionalStorage.Verify(ctx, token)
+		userId, err = hs.additionalStorage.ValidateSession(ctx, token)
 		if err != nil {
 			return 0, err
 		}

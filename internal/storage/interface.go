@@ -35,7 +35,7 @@ type UserStorageDriver interface {
 
 type LoginStorageDriver interface {
 	RegNewLogin(string) (int64, error)
-	FindUserByAuthKey(string) (int64, error)
+	Login(string) (int64, error)
 }
 
 type TaskStorageDriver interface {
@@ -44,6 +44,6 @@ type TaskStorageDriver interface {
 }
 
 type SessionStorageDriver interface {
-	Verify(context.Context, string) (int64, error)
+	ValidateSession(context.Context, string) (int64, error)
 	SaveSession(context.Context, entities.Session) error
 }

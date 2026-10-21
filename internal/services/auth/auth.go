@@ -5,6 +5,7 @@ import (
 	"SPRk_Space/internal/entities"
 	"SPRk_Space/internal/logger"
 	"SPRk_Space/internal/storage"
+	"SPRk_Space/internal/utils"
 	"context"
 	"crypto/hmac"
 	"crypto/rand"
@@ -81,7 +82,7 @@ func (a *Auth) RegstrationNewUser(ctx context.Context, ri entities.RegistrationI
 		if err != nil {
 			return "", err
 		}
-		_, err = a.session.Verify(a.ctx, tokenHash)
+		_, err = a.session.ValidateSession(a.ctx, tokenHash)
 		if err == ErrTokenNotFound {
 			break
 		}
@@ -107,7 +108,7 @@ func (a *Auth) RegstrationNewUser(ctx context.Context, ri entities.RegistrationI
 func (a *Auth) Login(ctx context.Context, li entities.LoginInput) (string, error) {
 	key := deriveAuthKey(li.Login, li.Pass, a.pepper)
 
-	userId, err := a.login.FindUserByAuthKey(key)
+	userId, err := a.login.Login(key)
 	if err != nil {
 		return "", err
 	}
@@ -131,8 +132,8 @@ func (a *Auth) Login(ctx context.Context, li entities.LoginInput) (string, error
 	return token, nil
 }
 
-func (a *Auth) Verify(ctx context.Context, token string) (int64, error) {
-	return a.session.Verify(ctx, token)
+func (a *Auth) ValidateSession(ctx context.Context, vsi entities.ValidateSessionInput) (int64, error) {
+	return a.session.ValidateSession(ctx, vsi.Token)
 }
 
 func (a *Auth) validateRegInput(ri entities.RegistrationInput) error {
@@ -181,7 +182,6 @@ func newToken() (token string, tokenHash string, err error) {
 		return "", "", fmt.Errorf("Auth: NewToken: Rand: %w", err)
 	}
 	token = base64.RawURLEncoding.EncodeToString(b)
-	sum := sha256.Sum256([]byte(token))
-	tokenHash = hex.EncodeToString(sum[:])
+	tokenHash = utils.Hash(utils.Sha256, token)
 	return token, tokenHash, nil
 }
